@@ -1,0 +1,1517 @@
+@import 'tailwindcss';
+@plugin "daisyui" {
+    themes: acalis-light --default, acalis-dark;
+}
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+/* ── Tema claro (Vuesax Light) ── */
+@plugin "daisyui/theme" {
+    name: "acalis-light";
+    default: true;
+    prefersdark: false;
+    color-scheme: light;
+
+    --color-primary: oklch(58% 0.22 285);
+    --color-primary-content: oklch(99% 0.01 285);
+    --color-secondary: oklch(72% 0.19 165);
+    --color-secondary-content: oklch(99% 0.01 165);
+    --color-accent: oklch(72% 0.17 55);
+    --color-accent-content: oklch(20% 0.04 55);
+    --color-neutral: oklch(35% 0.03 285);
+    --color-neutral-content: oklch(98% 0.01 285);
+    --color-base-100: oklch(100% 0 0);
+    --color-base-200: oklch(98% 0.004 285);
+    --color-base-300: oklch(93% 0.008 285);
+    --color-base-content: oklch(32% 0.02 285);
+    --color-info: oklch(72% 0.14 220);
+    --color-success: oklch(68% 0.17 155);
+    --color-warning: oklch(78% 0.16 65);
+    --color-error: oklch(62% 0.2 25);
+
+    --radius-selector: 0.625rem;
+    --radius-field: 0.5rem;
+    --radius-box: 0.875rem;
+}
+
+/* ── Tema oscuro (Vuesax Dark — sidebar oscuro + contenido claro) ── */
+@plugin "daisyui/theme" {
+    name: "acalis-dark";
+    default: false;
+    prefersdark: true;
+    color-scheme: dark;
+
+    --color-primary: oklch(62% 0.22 285);
+    --color-primary-content: oklch(99% 0.01 285);
+    --color-secondary: oklch(72% 0.19 165);
+    --color-secondary-content: oklch(99% 0.01 165);
+    --color-accent: oklch(72% 0.17 55);
+    --color-accent-content: oklch(20% 0.04 55);
+    --color-neutral: oklch(28% 0.03 285);
+    --color-neutral-content: oklch(95% 0.01 285);
+    --color-base-100: oklch(100% 0 0);
+    --color-base-200: oklch(98% 0.004 285);
+    --color-base-300: oklch(93% 0.008 285);
+    --color-base-content: oklch(32% 0.02 285);
+    --color-info: oklch(72% 0.14 220);
+    --color-success: oklch(68% 0.17 155);
+    --color-warning: oklch(78% 0.16 65);
+    --color-error: oklch(62% 0.2 25);
+
+    --radius-selector: 0.625rem;
+    --radius-field: 0.5rem;
+    --radius-box: 0.875rem;
+}
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+/* Variables de shell Vuesax por tema */
+@layer base {
+    [data-theme='acalis-light'] {
+        --depth: 1;
+        --vx-sidebar-bg: #ffffff;
+        --vx-sidebar-border: #ebe9f1;
+        --vx-sidebar-text: #6e6b7b;
+        --vx-sidebar-heading: #5e5873;
+        --vx-sidebar-active-bg: color-mix(in oklab, #7367f0 16%, transparent);
+        --vx-sidebar-active-text: #7367f0;
+        --vx-sidebar-hover: #f8f8f8;
+        --vx-content-bg: #f8f8f8;
+        --vx-header-bg: #ffffff;
+        --vx-header-border: #ebe9f1;
+        --vx-card-shadow: 0 4px 24px 0 rgba(34, 41, 47, 0.08);
+        --vx-gradient-start: #7367f0;
+        --vx-gradient-end: #9e95f5;
+        --vx-field-bg: #eeedf3;
+        --vx-field-bg-hover: #e4e3ea;
+        --vx-field-bg-focus: #f5f4f9;
+        --vx-field-border: #cfcdd6;
+        --vx-field-border-hover: #b9b7c3;
+        --vx-field-shadow: inset 0 1px 2px rgba(34, 41, 47, 0.07);
+    }
+
+    [data-theme='acalis-dark'] {
+        --depth: 1;
+        --vx-sidebar-bg: #283046;
+        --vx-sidebar-border: #3b4253;
+        --vx-sidebar-text: #a6b0cf;
+        --vx-sidebar-heading: #79829c;
+        --vx-sidebar-active-bg: #7367f0;
+        --vx-sidebar-active-text: #ffffff;
+        --vx-sidebar-hover: #343d55;
+        --vx-content-bg: #f8f8f8;
+        --vx-header-bg: #ffffff;
+        --vx-header-border: #ebe9f1;
+        --vx-card-shadow: 0 4px 24px 0 rgba(34, 41, 47, 0.1);
+        --vx-gradient-start: #283046;
+        --vx-gradient-end: #7367f0;
+        --vx-field-bg: #eeedf3;
+        --vx-field-bg-hover: #e4e3ea;
+        --vx-field-bg-focus: #f5f4f9;
+        --vx-field-border: #cfcdd6;
+        --vx-field-border-hover: #b9b7c3;
+        --vx-field-shadow: inset 0 1px 2px rgba(34, 41, 47, 0.07);
+    }
+}
+
+@layer components {
+    /* ── Shell ── */
+    .vx-app {
+        background-color: var(--vx-content-bg);
+        min-height: 100vh;
+        --vx-sidebar-width: 18rem;
+        --vx-sidebar-width-collapsed: 5rem;
+    }
+
+    html.vx-sidebar-is-collapsed .vx-app,
+    body.vx-sidebar-is-collapsed .vx-app {
+        --vx-sidebar-width: var(--vx-sidebar-width-collapsed);
+    }
+
+    .vx-sidebar {
+        width: var(--vx-sidebar-width);
+        min-width: var(--vx-sidebar-width);
+        max-width: var(--vx-sidebar-width);
+        background-color: var(--vx-sidebar-bg);
+        border-right: 1px solid var(--vx-sidebar-border);
+        color: var(--vx-sidebar-text);
+        transition: width 0.28s ease, min-width 0.28s ease, max-width 0.28s ease;
+    }
+
+    @media (min-width: 1024px) {
+        .drawer.lg\:drawer-open > .drawer-side > :not(.drawer-overlay) {
+            width: var(--vx-sidebar-width) !important;
+            min-width: var(--vx-sidebar-width);
+            max-width: var(--vx-sidebar-width);
+            transition: width 0.28s ease, min-width 0.28s ease, max-width 0.28s ease;
+        }
+    }
+
+    .vx-sidebar .vx-nav-section {
+        color: var(--vx-sidebar-heading);
+        font-size: 0.6875rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 1rem 1.25rem 0.375rem;
+    }
+
+    .vx-sidebar .vx-nav-link {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.625rem 1.25rem;
+        margin: 0.125rem 0.75rem;
+        border-radius: 0.5rem;
+        font-size: 0.9375rem;
+        font-weight: 500;
+        color: var(--vx-sidebar-text);
+        transition: background-color 0.15s, color 0.15s;
+    }
+
+    .vx-sidebar .vx-nav-link:hover {
+        background-color: var(--vx-sidebar-hover);
+        color: var(--vx-sidebar-active-text);
+    }
+
+    .vx-sidebar .vx-nav-link.active {
+        background-color: var(--vx-sidebar-active-bg);
+        color: var(--vx-sidebar-active-text);
+        box-shadow: 0 0 0 1px color-mix(in oklab, var(--vx-sidebar-active-text) 12%, transparent);
+    }
+
+    .vx-sidebar .vx-nav-link svg {
+        width: 1.125rem;
+        height: 1.125rem;
+        flex-shrink: 0;
+        opacity: 0.85;
+    }
+
+    /* Sidebar colapsado (desktop) — solo íconos, más espacio al dashboard */
+    .vx-sidebar-is-collapsed .vx-sidebar-brand-text,
+    .vx-sidebar-is-collapsed .vx-sidebar-label,
+    .vx-sidebar-is-collapsed .vx-sidebar-collapse-btn,
+    .vx-sidebar-is-collapsed .vx-nav-section {
+        display: none !important;
+    }
+
+    .vx-sidebar-is-collapsed .vx-sidebar-header {
+        justify-content: center;
+        padding-inline: 0.75rem;
+    }
+
+    .vx-sidebar-is-collapsed .vx-sidebar-brand {
+        justify-content: center;
+        flex: none;
+    }
+
+    .vx-sidebar-is-collapsed .vx-nav-link {
+        justify-content: center;
+        gap: 0;
+        padding: 0.7rem;
+        margin-inline: 0.5rem;
+        width: calc(100% - 1rem);
+    }
+
+    .vx-sidebar-is-collapsed .vx-nav-link svg {
+        width: 1.25rem;
+        height: 1.25rem;
+        opacity: 1;
+    }
+
+    .vx-sidebar-is-collapsed .vx-sidebar-help {
+        padding: 0.5rem;
+        background: transparent !important;
+    }
+
+    .vx-sidebar-is-collapsed .vx-sidebar-help-btn {
+        width: 2.75rem;
+        height: 2.75rem;
+        min-height: 2.75rem;
+        padding: 0;
+        margin: 0 auto;
+        border-radius: 0.75rem;
+    }
+
+    .vx-sidebar-is-collapsed .vx-sidebar-help-icon {
+        display: block;
+    }
+
+    .vx-sidebar-is-collapsed .vx-sidebar-footer {
+        padding: 0.75rem 0.5rem;
+    }
+
+    /* Avatar — marco morado institucional */
+    .vx-avatar-portal-ring {
+        position: relative;
+        box-shadow:
+            0 0 0 2px var(--color-base-100),
+            0 0 0 3.5px var(--color-primary),
+            0 6px 16px -4px color-mix(in oklab, var(--color-primary) 45%, transparent);
+    }
+
+    .vx-avatar-portal-ring::after {
+        content: '';
+        position: absolute;
+        inset: -3px;
+        border-radius: 9999px;
+        padding: 2px;
+        background: linear-gradient(135deg, #7367f0 0%, #b4a9ff 45%, #9e95f5 70%, #7367f0 100%);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+        opacity: 0.85;
+    }
+
+    .vx-header {
+        background-color: var(--vx-header-bg);
+        border-bottom: 1px solid var(--vx-header-border);
+        box-shadow: 0 4px 24px 0 rgba(34, 41, 47, 0.05);
+    }
+
+    .vx-main {
+        background-color: var(--vx-content-bg);
+    }
+
+    /* ── Cards Vuesax ── */
+    .vx-card {
+        background-color: var(--color-base-100);
+        border-radius: 0.875rem;
+        box-shadow: var(--vx-card-shadow);
+        border: 1px solid color-mix(in oklab, var(--color-base-300) 60%, transparent);
+    }
+
+    .vx-card-body {
+        padding: 1.5rem;
+    }
+
+    .vx-card-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--color-base-content);
+    }
+
+    .vx-stat-card {
+        background-color: var(--color-base-100);
+        border-radius: 0.875rem;
+        box-shadow: var(--vx-card-shadow);
+        border: 1px solid color-mix(in oklab, var(--color-base-300) 50%, transparent);
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .vx-stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 28px 0 rgba(34, 41, 47, 0.12);
+    }
+
+    .vx-stat-icon {
+        width: 2.625rem;
+        height: 2.625rem;
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .vx-stat-icon svg {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+
+    .vx-stat-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        line-height: 1.1;
+        color: var(--color-base-content);
+    }
+
+    .vx-stat-label {
+        font-size: 0.875rem;
+        color: color-mix(in oklab, var(--color-base-content) 55%, transparent);
+    }
+
+    .vx-welcome-banner {
+        background: linear-gradient(135deg, var(--vx-gradient-start), var(--vx-gradient-end));
+        border-radius: 0.875rem;
+        color: #ffffff;
+        padding: 1.75rem 2rem;
+        box-shadow: 0 4px 24px 0 color-mix(in oklab, #7367f0 35%, transparent);
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+    }
+
+    .vx-welcome-banner .btn {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.35);
+        color: #fff;
+    }
+
+    .vx-welcome-banner .btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* ── Formularios (controles visibles estilo Vuesax) ── */
+    .vx-field-label,
+    .fieldset-label {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+        color: var(--color-base-content);
+    }
+
+    .vx-field-hint {
+        font-size: 0.75rem;
+        line-height: 1.4;
+        color: color-mix(in oklab, var(--color-base-content) 58%, transparent);
+    }
+
+    .vx-field-error {
+        font-size: 0.75rem;
+        line-height: 1.4;
+        color: var(--color-error);
+        font-weight: 500;
+    }
+
+    /* Controles de formulario — cobertura global del sitio */
+    .vx-control,
+    .input.vx-control,
+    .select.vx-control,
+    .textarea.vx-control,
+    .vx-main :is(.input, .select, .textarea):not(.btn):not(.input-ghost):not(.select-ghost):not(.textarea-ghost):not([type='checkbox']):not([type='radio']):not([type='file']):not([type='range']):not([type='color']),
+    .vx-auth-card :is(.input, .select, .textarea):not(.btn):not([type='checkbox']):not([type='radio']),
+    .filter-toolbar :is(.input, .select, .textarea):not(.btn),
+    .vx-form-section :is(.input, .select, .textarea):not(.btn) {
+        --input-color: var(--vx-field-border);
+        width: 100%;
+        max-width: none;
+        min-height: 2.75rem;
+        padding: 0.625rem 0.875rem;
+        font-size: 0.9375rem;
+        line-height: 1.4;
+        color: var(--color-base-content);
+        background-color: var(--vx-field-bg) !important;
+        border: 1px solid var(--vx-field-border) !important;
+        border-radius: var(--radius-field);
+        box-shadow: var(--vx-field-shadow);
+        transition:
+            border-color 0.15s ease,
+            box-shadow 0.15s ease,
+            background-color 0.15s ease;
+        outline: none;
+    }
+
+    .textarea.vx-control,
+    .vx-main .textarea:not(.btn):not(.textarea-ghost),
+    .vx-form-section .textarea:not(.btn) {
+        min-height: 5rem;
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+        resize: vertical;
+    }
+
+    .select.vx-control,
+    .vx-main .select:not(.btn):not(.select-ghost),
+    .filter-toolbar .select:not(.btn),
+    .vx-form-section .select:not(.btn) {
+        appearance: none;
+        padding-right: 2.5rem;
+        cursor: pointer;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%235e5873' stroke-width='2.25'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 1rem;
+    }
+
+    .vx-control::placeholder,
+    .vx-main :is(.input, .textarea):not(.btn)::placeholder {
+        color: color-mix(in oklab, var(--color-base-content) 48%, transparent);
+    }
+
+    .vx-control:hover:not(:disabled):not([disabled]),
+    .vx-main :is(.input, .select, .textarea):not(.btn):not(:disabled):not([disabled]):hover {
+        border-color: var(--vx-field-border-hover) !important;
+        background-color: var(--vx-field-bg-hover) !important;
+    }
+
+    .vx-control:focus,
+    .vx-control:focus-within,
+    .vx-main :is(.input, .select, .textarea):not(.btn):focus,
+    .vx-main :is(.input, .select, .textarea):not(.btn):focus-within {
+        --input-color: var(--color-primary);
+        background-color: var(--vx-field-bg-focus) !important;
+        border-color: var(--color-primary) !important;
+        box-shadow:
+            var(--vx-field-shadow),
+            0 0 0 3px color-mix(in oklab, var(--color-primary) 18%, transparent);
+    }
+
+    .vx-control:disabled,
+    .vx-control[disabled],
+    .vx-main :is(.input, .select, .textarea):disabled,
+    .vx-main :is(.input, .select, .textarea)[disabled] {
+        opacity: 0.72;
+        cursor: not-allowed;
+        background-color: color-mix(in oklab, var(--vx-field-border) 28%, var(--vx-field-bg)) !important;
+    }
+
+    .vx-field:has(> .vx-field-error) .vx-control,
+    .vx-field:has(> .vx-field-error) :is(.input, .select, .textarea) {
+        border-color: var(--color-error) !important;
+        background-color: color-mix(in oklab, var(--color-error) 7%, var(--vx-field-bg)) !important;
+    }
+
+    .vx-field:has(> .vx-field-error) .vx-control:focus,
+    .vx-field:has(> .vx-field-error) :is(.input, .select, .textarea):focus {
+        box-shadow:
+            var(--vx-field-shadow),
+            0 0 0 3px color-mix(in oklab, var(--color-error) 16%, transparent);
+    }
+
+    .vx-main input[type='datetime-local'].vx-control,
+    .filter-toolbar input[type='datetime-local'] {
+        color-scheme: light;
+    }
+
+    .vx-form-section {
+        border: 1px solid color-mix(in oklab, var(--vx-field-border) 85%, transparent);
+        border-radius: var(--radius-box);
+        background: color-mix(in oklab, var(--vx-field-bg) 35%, var(--color-base-100));
+        padding: 1.25rem;
+    }
+
+    .vx-form-section-title {
+        font-size: 0.8125rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: color-mix(in oklab, var(--color-base-content) 65%, transparent);
+        margin-bottom: 1rem;
+    }
+
+    .form-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.75rem;
+        padding-top: 0.5rem;
+        margin-top: 0.25rem;
+        border-top: 1px solid var(--vx-field-border);
+    }
+
+    .filter-toolbar {
+        border: 1px solid var(--vx-field-border);
+        border-radius: var(--radius-box);
+        background-color: color-mix(in oklab, var(--vx-field-bg) 55%, var(--color-base-100));
+        padding: 1rem 1.25rem;
+        box-shadow: var(--vx-card-shadow);
+    }
+
+    /* ── Select2 (combobox) ── */
+    .select2-container {
+        width: 100% !important;
+    }
+
+    .select2-container--default .select2-selection--single,
+    .select2-container--default .select2-selection--multiple {
+        min-height: 2.75rem;
+        border: 1px solid var(--vx-field-border) !important;
+        border-radius: var(--radius-field) !important;
+        background-color: var(--vx-field-bg) !important;
+        box-shadow: var(--vx-field-shadow);
+        transition:
+            border-color 0.15s ease,
+            box-shadow 0.15s ease,
+            background-color 0.15s ease;
+    }
+
+    .select2-container--default .select2-selection--single {
+        display: flex;
+        align-items: center;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        padding: 0 2.25rem 0 0.875rem;
+        line-height: 2.65rem;
+        color: var(--color-base-content);
+        font-size: 0.9375rem;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__placeholder {
+        color: color-mix(in oklab, var(--color-base-content) 48%, transparent);
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 2.65rem;
+        right: 0.65rem;
+    }
+
+    .select2-container--default.select2-container--open .select2-selection--single,
+    .select2-container--default.select2-container--focus .select2-selection--single,
+    .select2-container--default.select2-container--open .select2-selection--multiple,
+    .select2-container--default.select2-container--focus .select2-selection--multiple {
+        border-color: var(--color-primary) !important;
+        background-color: var(--vx-field-bg-focus) !important;
+        box-shadow:
+            var(--vx-field-shadow),
+            0 0 0 3px color-mix(in oklab, var(--color-primary) 18%, transparent);
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow b {
+        border-color: #5e5873 transparent transparent transparent;
+    }
+
+    .select2-dropdown {
+        border: 1px solid var(--vx-field-border);
+        border-radius: var(--radius-field);
+        background: var(--color-base-100);
+        box-shadow: 0 12px 28px -8px rgba(34, 41, 47, 0.22);
+        overflow: hidden;
+        z-index: 9999;
+    }
+
+    .select2-container--default .select2-search--dropdown .select2-search__field {
+        border: 1px solid var(--vx-field-border);
+        border-radius: calc(var(--radius-field) - 2px);
+        background: var(--vx-field-bg);
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+    }
+
+    .select2-container--default .select2-results__option {
+        padding: 0.55rem 0.875rem;
+        font-size: 0.9375rem;
+    }
+
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: color-mix(in oklab, var(--color-primary) 14%, var(--color-base-100));
+        color: var(--color-base-content);
+    }
+
+    .select2-container--default .select2-results__option--selected {
+        background-color: color-mix(in oklab, var(--color-primary) 22%, var(--color-base-100));
+        color: var(--color-primary);
+        font-weight: 600;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__clear {
+        color: color-mix(in oklab, var(--color-base-content) 55%, transparent);
+        margin-right: 1.75rem;
+    }
+
+    /* ── Flatpickr (calendario) ── */
+    .flatpickr-calendar.open {
+        z-index: 10050 !important;
+    }
+
+    .vx-datepicker-visible,
+    .flatpickr-input[readonly],
+    .flatpickr-input.form-control,
+    input.flatpickr-input,
+    .vx-date-field {
+        cursor: pointer;
+        background-color: var(--vx-field-bg) !important;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%235e5873' stroke-width='1.75'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 1.1rem;
+        padding-right: 2.5rem !important;
+    }
+
+    input.flatpickr-input.flatpickr-mobile {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%235e5873' stroke-width='1.75'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'/%3E%3C/svg%3E");
+    }
+
+    .flatpickr-calendar {
+        border: 1px solid var(--vx-field-border);
+        border-radius: var(--radius-box);
+        box-shadow: 0 16px 36px -10px rgba(34, 41, 47, 0.24);
+        font-family: var(--font-sans);
+    }
+
+    .flatpickr-months {
+        background: color-mix(in oklab, var(--color-primary) 10%, var(--color-base-100));
+        border-bottom: 1px solid var(--vx-field-border);
+    }
+
+    .flatpickr-current-month .flatpickr-monthDropdown-months,
+    .flatpickr-current-month input.cur-year {
+        font-weight: 600;
+        color: var(--color-base-content);
+    }
+
+    .flatpickr-weekdays {
+        background: var(--vx-field-bg);
+    }
+
+    span.flatpickr-weekday {
+        color: color-mix(in oklab, var(--color-base-content) 65%, transparent);
+        font-weight: 600;
+        font-size: 0.75rem;
+    }
+
+    .flatpickr-day {
+        border-radius: 0.45rem;
+        color: var(--color-base-content);
+    }
+
+    .flatpickr-day.today {
+        border-color: color-mix(in oklab, var(--color-primary) 45%, transparent);
+    }
+
+    .flatpickr-day.selected,
+    .flatpickr-day.startRange,
+    .flatpickr-day.endRange,
+    .flatpickr-day.selected.inRange,
+    .flatpickr-day.startRange.inRange,
+    .flatpickr-day.endRange.inRange {
+        background: var(--color-primary);
+        border-color: var(--color-primary);
+        color: var(--color-primary-content);
+    }
+
+    .flatpickr-day:hover,
+    .flatpickr-day:focus {
+        background: color-mix(in oklab, var(--color-primary) 14%, var(--color-base-100));
+        border-color: transparent;
+    }
+
+    .flatpickr-months .flatpickr-prev-month,
+    .flatpickr-months .flatpickr-next-month {
+        fill: var(--color-base-content);
+    }
+
+    .flatpickr-months .flatpickr-prev-month:hover svg,
+    .flatpickr-months .flatpickr-next-month:hover svg {
+        fill: var(--color-primary);
+    }
+
+    .table-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 0.375rem;
+    }
+
+    .table-zebra tbody tr:hover {
+        background-color: color-mix(in oklab, var(--color-primary) 6%, transparent);
+    }
+
+    /* Alertas activas — inventario */
+    .vx-inventory-alert--critical {
+        border-color: color-mix(in oklab, var(--color-error) 65%, transparent);
+        background: linear-gradient(135deg, color-mix(in oklab, var(--color-error) 18%, #fff) 0%, color-mix(in oklab, var(--color-error) 8%, #fff) 100%);
+        color: color-mix(in oklab, var(--color-error) 85%, #000);
+    }
+
+    .vx-inventory-alert--warning {
+        border-color: color-mix(in oklab, var(--color-warning) 70%, transparent);
+        background: linear-gradient(135deg, color-mix(in oklab, var(--color-warning) 22%, #fff) 0%, color-mix(in oklab, var(--color-warning) 10%, #fff) 100%);
+        color: color-mix(in oklab, var(--color-warning) 80%, #000);
+    }
+
+    .vx-inventory-alert--info {
+        border-color: color-mix(in oklab, var(--color-info) 55%, transparent);
+        background: linear-gradient(135deg, color-mix(in oklab, var(--color-info) 16%, #fff) 0%, color-mix(in oklab, var(--color-info) 8%, #fff) 100%);
+        color: color-mix(in oklab, var(--color-info) 75%, #000);
+    }
+
+    /* ── Login split ── */
+    .vx-auth-shell {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 1024px) {
+        .vx-auth-shell {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    .vx-auth-visual {
+        background: linear-gradient(160deg, var(--vx-gradient-start) 0%, var(--vx-gradient-end) 100%);
+        color: #fff;
+        padding: 2.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .vx-auth-visual::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.12) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 40%);
+        pointer-events: none;
+    }
+
+    .vx-auth-panel {
+        background-color: var(--vx-content-bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .vx-auth-card {
+        width: 100%;
+        max-width: 26rem;
+        background: var(--color-base-100);
+        border-radius: 0.875rem;
+        box-shadow: var(--vx-card-shadow);
+        border: 1px solid color-mix(in oklab, var(--color-base-300) 60%, transparent);
+        padding: 2rem;
+    }
+
+    .vx-module-placeholder {
+        text-align: center;
+        padding: 3rem 2rem;
+    }
+
+    .vx-module-placeholder-icon {
+        width: 4.5rem;
+        height: 4.5rem;
+        margin: 0 auto 1.25rem;
+        border-radius: 1rem;
+        background: color-mix(in oklab, var(--color-primary) 12%, transparent);
+        color: var(--color-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .vx-theme-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.25rem;
+        border-radius: 9999px;
+        background: color-mix(in oklab, var(--color-base-300) 40%, transparent);
+        border: 1px solid var(--color-base-300);
+    }
+
+    .vx-theme-toggle button {
+        padding: 0.375rem 0.625rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        transition: all 0.15s;
+        color: color-mix(in oklab, var(--color-base-content) 60%, transparent);
+    }
+
+    .vx-theme-toggle button.active {
+        background: var(--color-primary);
+        color: var(--color-primary-content);
+        box-shadow: 0 2px 8px color-mix(in oklab, var(--color-primary) 40%, transparent);
+    }
+
+    .vx-auth-visual .vx-theme-toggle {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .vx-auth-visual .vx-theme-toggle button {
+        color: rgba(255, 255, 255, 0.85);
+    }
+
+    .vx-auth-visual .vx-theme-toggle button.active {
+        background: rgba(255, 255, 255, 0.25);
+        color: #ffffff;
+        box-shadow: none;
+    }
+
+    /* ── Matriz de permisos ── */
+    .vx-permission-legend__item {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8125rem;
+        color: color-mix(in oklab, var(--color-base-content) 70%, transparent);
+    }
+
+    .vx-permission-matrix {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .vx-permission-matrix thead th {
+        background: color-mix(in oklab, var(--color-base-200) 80%, transparent);
+        border-bottom: 1px solid var(--color-base-300);
+        padding: 0.875rem 0.75rem;
+        vertical-align: bottom;
+    }
+
+    .vx-permission-matrix__permission-col {
+        min-width: 16rem;
+        max-width: 22rem;
+        position: sticky;
+        left: 0;
+        z-index: 2;
+        background: var(--color-base-100);
+        border-right: 1px solid color-mix(in oklab, var(--color-base-300) 70%, transparent);
+    }
+
+    .vx-permission-matrix thead .vx-permission-matrix__permission-col {
+        background: color-mix(in oklab, var(--color-base-200) 80%, transparent);
+    }
+
+    .vx-permission-matrix__role-col {
+        min-width: 7.5rem;
+    }
+
+    .vx-permission-matrix__role-name {
+        display: block;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: var(--color-base-content);
+    }
+
+    .vx-permission-matrix__role-count {
+        display: block;
+        margin-top: 0.125rem;
+        font-size: 0.6875rem;
+        font-weight: 500;
+        color: color-mix(in oklab, var(--color-base-content) 50%, transparent);
+    }
+
+    .vx-permission-matrix__group-row td {
+        background: color-mix(in oklab, var(--color-primary) 8%, var(--color-base-100));
+        border-top: 1px solid color-mix(in oklab, var(--color-primary) 18%, transparent);
+        border-bottom: 1px solid color-mix(in oklab, var(--color-primary) 12%, transparent);
+        color: var(--color-primary);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        padding: 0.625rem 0.875rem;
+        text-transform: uppercase;
+    }
+
+    .vx-permission-matrix__data-row td {
+        border-bottom: 1px solid color-mix(in oklab, var(--color-base-300) 55%, transparent);
+        padding: 0.875rem 0.75rem;
+        vertical-align: middle;
+    }
+
+    .vx-permission-matrix__data-row:hover td {
+        background: color-mix(in oklab, var(--color-base-200) 45%, transparent);
+    }
+
+    .vx-permission-matrix__data-row:hover .vx-permission-matrix__permission-col {
+        background: color-mix(in oklab, var(--color-base-200) 45%, var(--color-base-100));
+    }
+
+    .vx-permission-cell {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.3rem;
+        min-width: 3.25rem;
+        padding: 0.35rem 0.65rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        line-height: 1;
+    }
+
+    .vx-permission-cell svg {
+        width: 0.95rem;
+        height: 0.95rem;
+        flex-shrink: 0;
+    }
+
+    .vx-permission-cell--granted {
+        background: color-mix(in oklab, var(--color-success) 14%, transparent);
+        border: 1px solid color-mix(in oklab, var(--color-success) 28%, transparent);
+        color: var(--color-success);
+    }
+
+    .vx-permission-cell--denied {
+        background: color-mix(in oklab, #f97316 14%, var(--color-base-100));
+        border: 1px solid color-mix(in oklab, #ef4444 28%, #f97316 20%);
+        color: #dc5c45;
+    }
+
+    @media (max-width: 640px) {
+        .vx-permission-cell__label {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .vx-permission-cell {
+            min-width: 2rem;
+            padding: 0.4rem;
+        }
+    }
+
+    /* ── Páginas HTTP de error ── */
+    .vx-http-error-body {
+        min-height: 100dvh;
+        background: var(--color-base-200);
+    }
+
+    .vx-http-error {
+        position: relative;
+        display: flex;
+        min-height: 100dvh;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .vx-http-error-bg {
+        pointer-events: none;
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+    }
+
+    .vx-http-error-orb {
+        position: absolute;
+        border-radius: 9999px;
+        filter: blur(80px);
+        opacity: 0.45;
+        animation: vx-error-float 12s ease-in-out infinite;
+    }
+
+    .vx-http-error-orb--1 {
+        top: -8%;
+        right: -5%;
+        width: 28rem;
+        height: 28rem;
+        background: color-mix(in oklab, var(--color-primary) 55%, transparent);
+    }
+
+    .vx-http-error-orb--2 {
+        bottom: -12%;
+        left: -8%;
+        width: 22rem;
+        height: 22rem;
+        animation-delay: -4s;
+        background: color-mix(in oklab, var(--color-secondary) 40%, transparent);
+    }
+
+    .vx-http-error--error .vx-http-error-orb--1 {
+        background: color-mix(in oklab, var(--color-error) 50%, transparent);
+    }
+
+    .vx-http-error--warning .vx-http-error-orb--1 {
+        background: color-mix(in oklab, var(--color-warning) 55%, transparent);
+    }
+
+    .vx-http-error--info .vx-http-error-orb--1 {
+        background: color-mix(in oklab, var(--color-info) 50%, transparent);
+    }
+
+    .vx-http-error-grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(color-mix(in oklab, var(--color-base-content) 4%, transparent) 1px, transparent 1px),
+            linear-gradient(90deg, color-mix(in oklab, var(--color-base-content) 4%, transparent) 1px, transparent 1px);
+        background-size: 48px 48px;
+        mask-image: radial-gradient(ellipse at center, black 20%, transparent 75%);
+    }
+
+    @keyframes vx-error-float {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        50% { transform: translate(-12px, 16px) scale(1.05); }
+    }
+
+    .vx-http-error-top {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .vx-http-error-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-weight: 700;
+        color: var(--color-base-content);
+        text-decoration: none;
+    }
+
+    .vx-http-error-brand-icon {
+        display: flex;
+        height: 2.25rem;
+        width: 2.25rem;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.65rem;
+        background: linear-gradient(135deg, var(--color-primary), color-mix(in oklab, var(--color-primary) 70%, white));
+        color: var(--color-primary-content);
+        font-size: 1.1rem;
+    }
+
+    .vx-http-error-main {
+        position: relative;
+        z-index: 5;
+        flex: 1;
+        display: grid;
+        gap: 1.5rem;
+        align-content: center;
+        max-width: 72rem;
+        margin: 0 auto;
+        padding: 1rem 1.5rem 2rem;
+        width: 100%;
+    }
+
+    @media (min-width: 1024px) {
+        .vx-http-error-main {
+            grid-template-columns: 1fr 220px;
+            padding: 2rem;
+        }
+    }
+
+    .vx-http-error-card {
+        display: grid;
+        gap: 2rem;
+        border-radius: var(--radius-box);
+        border: 1px solid color-mix(in oklab, var(--color-base-content) 8%, transparent);
+        background: color-mix(in oklab, var(--color-base-100) 92%, transparent);
+        backdrop-filter: blur(12px);
+        padding: 2rem;
+        box-shadow: 0 24px 48px -12px color-mix(in oklab, var(--color-base-content) 12%, transparent);
+    }
+
+    @media (min-width: 768px) {
+        .vx-http-error-card {
+            grid-template-columns: minmax(200px, 280px) 1fr;
+            padding: 2.5rem;
+        }
+    }
+
+    .vx-http-error-eyebrow {
+        margin: 0 0 0.5rem;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: color-mix(in oklab, var(--color-base-content) 50%, transparent);
+    }
+
+    .vx-http-error-code {
+        position: relative;
+        line-height: 1;
+    }
+
+    .vx-http-error-code-digit {
+        font-family: ui-monospace, 'Courier New', monospace;
+        font-size: clamp(4.5rem, 14vw, 7rem);
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        background: linear-gradient(135deg, var(--color-primary) 0%, color-mix(in oklab, var(--color-primary) 60%, var(--color-secondary)) 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: none;
+        animation: vx-error-pulse 3s ease-in-out infinite;
+    }
+
+    .vx-http-error--error .vx-http-error-code-digit {
+        background: linear-gradient(135deg, var(--color-error), #f97316);
+        -webkit-background-clip: text;
+        background-clip: text;
+    }
+
+    .vx-http-error--warning .vx-http-error-code-digit {
+        background: linear-gradient(135deg, var(--color-warning), var(--color-accent));
+        -webkit-background-clip: text;
+        background-clip: text;
+    }
+
+    .vx-http-error--info .vx-http-error-code-digit {
+        background: linear-gradient(135deg, var(--color-info), var(--color-primary));
+        -webkit-background-clip: text;
+        background-clip: text;
+    }
+
+    @keyframes vx-error-pulse {
+        0%, 100% { opacity: 1; filter: brightness(1); }
+        50% { opacity: 0.92; filter: brightness(1.08); }
+    }
+
+    .vx-http-error-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    .vx-http-error-badge {
+        border-color: color-mix(in oklab, var(--color-primary) 35%, transparent);
+        color: var(--color-primary);
+    }
+
+    .vx-http-error-headline {
+        margin: 0 0 0.75rem;
+        font-size: clamp(1.5rem, 3vw, 2rem);
+        font-weight: 700;
+        color: var(--color-base-content);
+        line-height: 1.2;
+    }
+
+    .vx-http-error-description {
+        margin: 0 0 1.25rem;
+        font-size: 1rem;
+        line-height: 1.65;
+        color: color-mix(in oklab, var(--color-base-content) 68%, transparent);
+    }
+
+    .vx-http-error-hint {
+        display: flex;
+        gap: 0.75rem;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
+        padding: 1rem 1.1rem;
+        border-radius: var(--radius-field);
+        border: 1px solid color-mix(in oklab, var(--color-info) 25%, transparent);
+        background: color-mix(in oklab, var(--color-info) 8%, var(--color-base-100));
+        font-size: 0.9rem;
+        line-height: 1.55;
+        color: color-mix(in oklab, var(--color-base-content) 75%, transparent);
+    }
+
+    .vx-http-error-hint-icon {
+        flex-shrink: 0;
+        font-size: 1.1rem;
+        opacity: 0.7;
+    }
+
+    .vx-http-error-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.65rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .vx-http-error-ref {
+        margin: 0;
+        font-size: 0.75rem;
+        color: color-mix(in oklab, var(--color-base-content) 45%, transparent);
+    }
+
+    .vx-http-error-debug {
+        margin-bottom: 1rem;
+    }
+
+    .vx-http-error-aside {
+        display: none;
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 1.25rem;
+        border-radius: var(--radius-box);
+        border: 1px solid color-mix(in oklab, var(--color-base-content) 8%, transparent);
+        background: color-mix(in oklab, var(--color-base-100) 80%, transparent);
+        height: fit-content;
+    }
+
+    @media (min-width: 1024px) {
+        .vx-http-error-aside {
+            display: flex;
+        }
+    }
+
+    .vx-http-error-aside-title {
+        margin: 0;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: color-mix(in oklab, var(--color-base-content) 50%, transparent);
+    }
+
+    .vx-http-error-family {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .vx-http-error-family-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        padding: 0.75rem;
+        border-radius: var(--radius-field);
+        border: 1px solid transparent;
+        font-size: 0.8rem;
+        color: color-mix(in oklab, var(--color-base-content) 55%, transparent);
+        transition: border-color 0.2s, background 0.2s;
+    }
+
+    .vx-http-error-family-item.is-active {
+        border-color: color-mix(in oklab, var(--color-primary) 30%, transparent);
+        background: color-mix(in oklab, var(--color-primary) 8%, transparent);
+        color: var(--color-base-content);
+    }
+
+    .vx-http-error-footer {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 1.25rem;
+        text-align: center;
+        font-size: 0.75rem;
+        color: color-mix(in oklab, var(--color-base-content) 45%, transparent);
+    }
+
+    /* Galería dev de códigos HTTP */
+    .vx-http-gallery {
+        max-width: 80rem;
+        margin: 0 auto;
+        padding: 2rem 1.5rem 3rem;
+    }
+
+    .vx-http-gallery-grid {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    }
+
+    .vx-http-gallery-card {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 1.25rem;
+        border-radius: var(--radius-box);
+        border: 1px solid color-mix(in oklab, var(--color-base-content) 10%, transparent);
+        background: var(--color-base-100);
+        text-decoration: none;
+        color: inherit;
+        transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+    }
+
+    .vx-http-gallery-card:hover {
+        transform: translateY(-2px);
+        border-color: color-mix(in oklab, var(--color-primary) 35%, transparent);
+        box-shadow: 0 12px 24px -8px color-mix(in oklab, var(--color-primary) 20%, transparent);
+    }
+
+    .vx-http-gallery-code {
+        font-family: ui-monospace, monospace;
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1;
+        color: var(--color-primary);
+    }
+
+    .vx-http-gallery-card--error .vx-http-gallery-code { color: var(--color-error); }
+    .vx-http-gallery-card--warning .vx-http-gallery-code { color: var(--color-warning); }
+    .vx-http-gallery-card--info .vx-http-gallery-code { color: var(--color-info); }
+
+    /* Campana de notificaciones */
+    .vx-notification-divider {
+        position: relative;
+        height: 1px;
+        margin: 0.35rem 1.25rem;
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            color-mix(in oklab, var(--color-base-content) 10%, transparent) 18%,
+            color-mix(in oklab, var(--color-primary) 28%, transparent) 50%,
+            color-mix(in oklab, var(--color-base-content) 10%, transparent) 82%,
+            transparent 100%
+        );
+    }
+
+    .vx-notification-divider::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 4px;
+        height: 4px;
+        border-radius: 9999px;
+        transform: translate(-50%, -50%);
+        background: color-mix(in oklab, var(--color-primary) 45%, var(--color-base-100));
+        box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary) 10%, transparent);
+    }
+
+    .vx-notification-item {
+        border-radius: 0;
+    }
+
+    .vx-notification-item:hover {
+        background: color-mix(in oklab, var(--color-base-200) 65%, transparent);
+    }
+
+    .vx-notification-item--unread {
+        background: color-mix(in oklab, var(--color-primary) 6%, var(--color-base-100));
+    }
+
+    .vx-notification-item--unread:hover {
+        background: color-mix(in oklab, var(--color-primary) 10%, var(--color-base-100));
+    }
+
+    .vx-notification-item--read {
+        opacity: 0.78;
+    }
+
+    /* Puerta de acceso — módulo residentes (Ley 21.719) */
+    .vx-skip-link {
+        position: absolute;
+        left: -9999px;
+        top: auto;
+        z-index: 100;
+        padding: 0.75rem 1rem;
+        background: var(--color-primary);
+        color: var(--color-primary-content);
+        border-radius: 0.5rem;
+        font-weight: 600;
+    }
+
+    .vx-skip-link:focus {
+        left: 1rem;
+        top: 1rem;
+    }
+
+    .vx-resident-gate-shell {
+        position: relative;
+        display: flex;
+        min-height: calc(100dvh - 8rem);
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem 1rem 2rem;
+    }
+
+    .vx-resident-gate-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 30;
+        background: color-mix(in oklab, var(--color-neutral) 35%, transparent);
+        backdrop-filter: blur(6px);
+        pointer-events: none;
+    }
+
+    .vx-resident-gate-modal {
+        position: relative;
+        z-index: 40;
+        width: 100%;
+        max-width: 36rem;
+        border-radius: var(--radius-box);
+        border: 1px solid color-mix(in oklab, var(--color-primary) 25%, var(--color-base-300));
+        background: var(--color-base-100);
+        box-shadow:
+            0 24px 48px -12px color-mix(in oklab, var(--color-primary) 25%, transparent),
+            0 0 0 1px color-mix(in oklab, var(--color-base-content) 5%, transparent);
+        padding: 1.75rem;
+        outline: none;
+    }
+
+    .vx-resident-gate-modal:focus-visible {
+        box-shadow:
+            0 0 0 3px color-mix(in oklab, var(--color-primary) 35%, transparent),
+            0 24px 48px -12px color-mix(in oklab, var(--color-primary) 25%, transparent);
+    }
+
+    .vx-resident-gate-header {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+        margin-bottom: 1.25rem;
+    }
+
+    .vx-resident-gate-icon {
+        display: flex;
+        height: 3rem;
+        width: 3rem;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.875rem;
+        background: color-mix(in oklab, var(--color-primary) 12%, var(--color-base-100));
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .vx-resident-gate-eyebrow {
+        margin: 0;
+        font-size: 0.6875rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: color-mix(in oklab, var(--color-primary) 80%, var(--color-base-content));
+    }
+
+    .vx-resident-gate-title {
+        margin: 0.25rem 0 0;
+        font-size: 1.375rem;
+        font-weight: 700;
+        line-height: 1.25;
+        color: var(--color-base-content);
+    }
+
+    .vx-resident-gate-body {
+        margin-bottom: 1.25rem;
+    }
+
+    .vx-resident-gate-checklist {
+        margin: 1rem 0 0;
+        padding: 0.875rem 1rem 0.875rem 2rem;
+        list-style: disc;
+        border-radius: var(--radius-field);
+        background: color-mix(in oklab, var(--color-info) 8%, var(--color-base-100));
+        border: 1px solid color-mix(in oklab, var(--color-info) 20%, transparent);
+        font-size: 0.8125rem;
+        line-height: 1.55;
+        color: color-mix(in oklab, var(--color-base-content) 75%, transparent);
+    }
+
+    .vx-resident-gate-checklist li + li {
+        margin-top: 0.35rem;
+    }
+
+    .vx-resident-gate-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .vx-resident-gate-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        justify-content: flex-end;
+        padding-top: 0.5rem;
+    }
+
+    .vx-resident-gate-footer {
+        margin-top: 1.25rem;
+        padding-top: 1rem;
+        border-top: 1px solid color-mix(in oklab, var(--color-base-content) 8%, transparent);
+        text-align: center;
+    }
+}

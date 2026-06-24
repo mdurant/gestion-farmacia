@@ -1,0 +1,308 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Acalis Pharma API",
+    "description": "API REST para gestión farmacéutica en residencias de larga estadía (Chile). Autenticación vía Laravel Sanctum (Bearer). Zona horaria: America/Santiago.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Acalis Pharma"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000",
+      "description": "Desarrollo local (php artisan serve)"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Inventario",
+      "description": "Movimientos de inventario y merma"
+    }
+  ],
+  "paths": {
+    "/api/inventory/waste": {
+      "post": {
+        "tags": ["Inventario"],
+        "summary": "Registrar salida por merma",
+        "description": "Registra una salida de inventario por merma (desperdicio, vencimiento, etc.). Requiere usuario autenticado y activo, permiso `inventory.waste` y rate limit `critical-inventory` (10 solicitudes/minuto). Para fármacos controlados puede exigirse `authorization_code`.",
+        "operationId": "recordWasteMovement",
+        "security": [
+          {
+            "sanctum": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/wasteMovementRequest"
+              },
+              "example": {
+                "batch_id": 1,
+                "pharmacy_id": 1,
+                "cost_center_id": 1,
+                "quantity": 2,
+                "reason": "Vencimiento próximo detectado en botiquín",
+                "notes": "Lote retirado del módulo piso 2",
+                "authorization_code": null
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Movimiento registrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inventoryMovementEnvelope"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/errorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sin permiso, usuario inactivo o fármaco controlado sin autorización",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/errorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validación fallida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/validationErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Demasiadas solicitudes (rate limit)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/errorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "sanctum": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "Sanctum",
+        "description": "Token personal de Laravel Sanctum en el header Authorization: Bearer {token}."
+      }
+    },
+    "schemas": {
+      "wasteMovementRequest": {
+        "type": "object",
+        "required": [
+          "batch_id",
+          "pharmacy_id",
+          "cost_center_id",
+          "quantity",
+          "reason"
+        ],
+        "properties": {
+          "batch_id": {
+            "type": "integer",
+            "description": "ID del lote afectado",
+            "example": 1
+          },
+          "pharmacy_id": {
+            "type": "integer",
+            "description": "ID de la bodega origen",
+            "example": 1
+          },
+          "cost_center_id": {
+            "type": "integer",
+            "description": "ID del centro de costo",
+            "example": 1
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Cantidad de unidades en merma",
+            "example": 2
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "description": "Motivo de la merma",
+            "example": "Vencimiento próximo detectado en botiquín"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 1000,
+            "nullable": true,
+            "description": "Notas adicionales",
+            "example": "Lote retirado del módulo piso 2"
+          },
+          "authorization_code": {
+            "type": "string",
+            "maxLength": 50,
+            "nullable": true,
+            "description": "Código de autorización para fármacos controlados o estupefacientes",
+            "example": "AUTH-2026-0042"
+          }
+        }
+      },
+      "inventoryMovement": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 42
+          },
+          "movement_type": {
+            "type": "string",
+            "example": "waste"
+          },
+          "movement_type_label": {
+            "type": "string",
+            "example": "Salida por merma"
+          },
+          "quantity": {
+            "type": "integer",
+            "example": 2
+          },
+          "unit_cost": {
+            "type": "number",
+            "nullable": true,
+            "example": 1250.5
+          },
+          "total_value": {
+            "type": "number",
+            "nullable": true,
+            "example": 2501
+          },
+          "reason": {
+            "type": "string",
+            "example": "Vencimiento próximo detectado en botiquín"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "example": "Lote retirado del módulo piso 2"
+          },
+          "movement_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-06-18T14:30:00-04:00"
+          },
+          "drug": {
+            "$ref": "#/components/schemas/drugSummary"
+          },
+          "pharmacy": {
+            "$ref": "#/components/schemas/pharmacySummary"
+          },
+          "batch": {
+            "$ref": "#/components/schemas/batchSummary"
+          },
+          "cost_center": {
+            "$ref": "#/components/schemas/costCenterSummary"
+          },
+          "user": {
+            "$ref": "#/components/schemas/userSummary"
+          }
+        }
+      },
+      "inventoryMovementEnvelope": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/inventoryMovement"
+          }
+        }
+      },
+      "drugSummary": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 10 },
+          "name": { "type": "string", "example": "Paracetamol 500 mg" },
+          "code": { "type": "string", "example": "FAR-001" }
+        }
+      },
+      "pharmacySummary": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "name": { "type": "string", "example": "Bodega Central" }
+        }
+      },
+      "batchSummary": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "batch_number": { "type": "string", "example": "LOT-2026-001" },
+          "expiration_date": { "type": "string", "format": "date", "example": "2026-12-31" }
+        }
+      },
+      "costCenterSummary": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "name": { "type": "string", "example": "Residencia Norte" }
+        }
+      },
+      "userSummary": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 3 },
+          "name": { "type": "string", "example": "María González" }
+        }
+      },
+      "errorResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "No autorizado."
+          }
+        }
+      },
+      "validationErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Debe seleccionar un lote."
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "example": {
+              "batch_id": ["Debe seleccionar un lote."],
+              "quantity": ["La cantidad debe ser al menos 1 unidad."]
+            }
+          }
+        }
+      }
+    }
+  }
+}
