@@ -10,8 +10,13 @@
 
     @include('reports.partials.filters', [
         'exportReport' => 'kardex',
-        'showResidentFilter' => true,
+        'showMovementTypeFilter' => true,
+        'showProfessionalFilter' => true,
+        'showDrugFilter' => true,
+        'showResidentFilter' => false,
     ])
+
+    <x-ui.records-found :items="$movements" />
 
     <x-ui.card>
         <div class="overflow-x-auto">

@@ -14,6 +14,8 @@
         'showResidentFilter' => false,
     ])
 
+    <x-ui.records-found :items="$rows" />
+
     <x-ui.card>
         <div class="overflow-x-auto">
             <table class="table table-zebra">

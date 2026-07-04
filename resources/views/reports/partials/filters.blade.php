@@ -1,43 +1,81 @@
 <form method="GET" class="filter-toolbar space-y-4">
-    <div class="grid gap-4 md:grid-cols-3 xl:grid-cols-6">
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
         <x-ui.field label="Desde" for="from">
             <x-ui.input id="from" type="date" name="from" value="{{ $filters->from }}" />
         </x-ui.field>
         <x-ui.field label="Hasta" for="to">
             <x-ui.input id="to" type="date" name="to" value="{{ $filters->to }}" />
         </x-ui.field>
-        <x-ui.field label="Bodega" for="pharmacy_id">
-            <x-ui.select id="pharmacy_id" name="pharmacy_id">
-                <option value="">Todas</option>
-                @foreach ($pharmacies as $pharmacy)
-                    <option value="{{ $pharmacy->id }}" @selected($filters->pharmacyId == $pharmacy->id)>{{ $pharmacy->name }}</option>
-                @endforeach
-            </x-ui.select>
-        </x-ui.field>
-        <x-ui.field label="Centro de costo" for="cost_center_id">
-            <x-ui.select id="cost_center_id" name="cost_center_id">
-                <option value="">Todos</option>
-                @foreach ($costCenters as $center)
-                    <option value="{{ $center->id }}" @selected($filters->costCenterId == $center->id)>{{ $center->name }}</option>
-                @endforeach
-            </x-ui.select>
-        </x-ui.field>
+
+        @if ($showMovementTypeFilter ?? false)
+            <x-ui.field label="Tipo" for="movement_type">
+                <x-ui.select id="movement_type" name="movement_type">
+                    <option value="">Todos</option>
+                    @foreach ($movementTypes as $type)
+                        <option value="{{ $type->value }}" @selected($filters->movementType === $type->value)>
+                            {{ $type->label() }}
+                        </option>
+                    @endforeach
+                </x-ui.select>
+            </x-ui.field>
+        @endif
+
         @if ($showDrugFilter ?? true)
             <x-ui.field label="Fármaco" for="drug_id">
                 <x-ui.select id="drug_id" name="drug_id">
                     <option value="">Todos</option>
                     @foreach ($drugs as $drug)
-                        <option value="{{ $drug->id }}" @selected($filters->drugId == $drug->id)>{{ $drug->name }}</option>
+                        <option value="{{ $drug->id }}" @selected($filters->drugId == $drug->id)>
+                            {{ $drug->code }} — {{ $drug->name }}
+                        </option>
                     @endforeach
                 </x-ui.select>
             </x-ui.field>
         @endif
+
+        <x-ui.field label="Bodega" for="pharmacy_id">
+            <x-ui.select id="pharmacy_id" name="pharmacy_id">
+                <option value="">Todas</option>
+                @foreach ($pharmacies as $pharmacy)
+                    <option value="{{ $pharmacy->id }}" @selected($filters->pharmacyId == $pharmacy->id)>
+                        {{ $pharmacy->name }}
+                    </option>
+                @endforeach
+            </x-ui.select>
+        </x-ui.field>
+
+        <x-ui.field label="Centro de costo" for="cost_center_id">
+            <x-ui.select id="cost_center_id" name="cost_center_id">
+                <option value="">Todos</option>
+                @foreach ($costCenters as $center)
+                    <option value="{{ $center->id }}" @selected($filters->costCenterId == $center->id)>
+                        {{ $center->name }}
+                    </option>
+                @endforeach
+            </x-ui.select>
+        </x-ui.field>
+
+        @if ($showProfessionalFilter ?? false)
+            <x-ui.field label="Profesional" for="user_id">
+                <x-ui.select id="user_id" name="user_id">
+                    <option value="">Todos</option>
+                    @foreach ($professionals as $professional)
+                        <option value="{{ $professional->id }}" @selected($filters->userId == $professional->id)>
+                            {{ $professional->display_name }}
+                        </option>
+                    @endforeach
+                </x-ui.select>
+            </x-ui.field>
+        @endif
+
         @if ($showResidentFilter ?? false)
             <x-ui.field label="Residente" for="resident_id">
                 <x-ui.select id="resident_id" name="resident_id">
                     <option value="">Todos</option>
                     @foreach ($residents as $resident)
-                        <option value="{{ $resident->id }}" @selected($filters->residentId == $resident->id)>{{ $resident->full_name }}</option>
+                        <option value="{{ $resident->id }}" @selected($filters->residentId == $resident->id)>
+                            {{ $resident->full_name }}
+                        </option>
                     @endforeach
                 </x-ui.select>
             </x-ui.field>

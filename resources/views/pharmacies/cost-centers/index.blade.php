@@ -23,6 +23,8 @@
         </form>
     </div>
 
+    <x-ui.records-found :items="$costCenters" />
+
     <x-ui.card>
         <div class="overflow-x-auto">
             <table class="table table-zebra">

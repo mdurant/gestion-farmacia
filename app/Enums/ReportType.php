@@ -9,6 +9,7 @@ enum ReportType: string
     case Valuation = 'valorizacion';
     case MonthlyWaste = 'mermas-mensuales';
     case PurchaseProjection = 'proyeccion-compra';
+    case Charts = 'graficos';
 
     public function label(): string
     {
@@ -18,6 +19,7 @@ enum ReportType: string
             self::Valuation => 'Valorización de inventario',
             self::MonthlyWaste => 'Mermas mensuales',
             self::PurchaseProjection => 'Proyección de compra',
+            self::Charts => 'Gráficos analíticos',
         };
     }
 
@@ -29,6 +31,7 @@ enum ReportType: string
             self::Valuation => 'Valor del stock actual por bodega y fármaco.',
             self::MonthlyWaste => 'Resumen mensual de mermas en cantidad y valor.',
             self::PurchaseProjection => 'Fármacos bajo mínimo con cantidad sugerida de reposición.',
+            self::Charts => 'Inventario, consumo, proveedores y auditoría de pérdidas en gráficos.',
         };
     }
 
@@ -40,12 +43,18 @@ enum ReportType: string
             self::Valuation => 'reports.valuation',
             self::MonthlyWaste => 'reports.monthly-waste',
             self::PurchaseProjection => 'reports.purchase-projection',
+            self::Charts => 'reports.charts',
         };
     }
 
     public function isExecutive(): bool
     {
-        return in_array($this, [self::Valuation, self::MonthlyWaste, self::PurchaseProjection], true);
+        return in_array($this, [
+            self::Valuation,
+            self::MonthlyWaste,
+            self::PurchaseProjection,
+            self::Charts,
+        ], true);
     }
 
     public static function fromSlug(string $slug): self

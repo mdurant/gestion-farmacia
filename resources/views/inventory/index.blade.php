@@ -70,6 +70,8 @@
         </form>
     </div>
 
+    <x-ui.records-found :items="$batches" />
+
     <x-ui.card title="Stock por lote">
         <div class="overflow-x-auto">
             <table class="table table-zebra">

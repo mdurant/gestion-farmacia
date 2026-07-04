@@ -37,7 +37,48 @@ class ReportsModuleTest extends TestCase
         $this->actingAs($user)
             ->get(route('reports.kardex'))
             ->assertOk()
-            ->assertSee('Kardex de movimientos');
+            ->assertSee('Kardex de movimientos')
+            ->assertSee('Registros encontrados:')
+            ->assertSee('name="movement_type"', false)
+            ->assertSee('name="drug_id"', false)
+            ->assertSee('name="pharmacy_id"', false)
+            ->assertSee('name="cost_center_id"', false)
+            ->assertSee('name="user_id"', false)
+            ->assertDontSee('name="resident_id"', false);
+    }
+
+    public function test_kardex_filters_by_type_and_professional(): void
+    {
+        [$user, , $drug, $pharmacy, $costCenter, $batch] = $this->seedMovementData();
+        $other = $this->userWithRole(UserRole::HeadNurse);
+
+        InventoryMovement::query()->create([
+            'movement_type' => MovementType::ExitWaste,
+            'drug_id' => $drug->id,
+            'batch_id' => $batch->id,
+            'pharmacy_id' => $pharmacy->id,
+            'cost_center_id' => $costCenter->id,
+            'user_id' => $other->id,
+            'quantity' => 1,
+            'unit_cost' => 100,
+            'total_value' => 100,
+            'reason' => 'Merma filtrable kardex',
+            'movement_at' => now(),
+        ]);
+
+        $response = $this->actingAs($user)
+            ->get(route('reports.kardex', [
+                'movement_type' => MovementType::Entry->value,
+                'user_id' => $user->id,
+                'from' => now()->subDay()->toDateString(),
+                'to' => now()->toDateString(),
+            ]))
+            ->assertOk();
+
+        $html = $response->getContent();
+        $this->assertSame(1, substr_count($html, 'badge-neutral badge-outline badge-xs'));
+        $this->assertStringContainsString('Entrada', $html);
+        $this->assertStringNotContainsString('Merma filtrable kardex', $html);
     }
 
     public function test_head_nurse_cannot_view_executive_valuation(): void
@@ -117,6 +158,32 @@ class ReportsModuleTest extends TestCase
             ->assertOk()
             ->assertSee('Fármaco Crítico')
             ->assertSee('Crítico');
+    }
+
+    public function test_medical_director_can_view_analytical_charts(): void
+    {
+        $this->seedMovementData();
+
+        $this->actingAs($this->userWithRole(UserRole::MedicalDirector))
+            ->get(route('reports.charts'))
+            ->assertOk()
+            ->assertSee('Gráficos analíticos')
+            ->assertSee('Control de inventario y caducidad')
+            ->assertSee('chart-inventory-category')
+            ->assertSee('chart-expiry-gauge')
+            ->assertSee('chart-consumption-trend')
+            ->assertSee('chart-rotation-bubble')
+            ->assertSee('chart-supplier-scatter')
+            ->assertSee('chart-purchases-donut')
+            ->assertSee('chart-loss-control')
+            ->assertSee('chart-movement-funnel');
+    }
+
+    public function test_head_nurse_cannot_view_analytical_charts(): void
+    {
+        $this->actingAs($this->userWithRole(UserRole::HeadNurse))
+            ->get(route('reports.charts'))
+            ->assertForbidden();
     }
 
     /** @return array{0: User, 1: Resident, 2: Drug, 3: Pharmacy, 4: CostCenter, 5: Batch} */

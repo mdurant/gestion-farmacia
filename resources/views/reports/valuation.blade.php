@@ -13,6 +13,8 @@
         'showResidentFilter' => false,
     ])
 
+    <x-ui.records-found :count="$data['by_drug']->count()" />
+
     <div class="grid gap-4 sm:grid-cols-3">
         <x-ui.stat-card label="Valor total" :value="'$'.number_format($data['total_value'], 0, ',', '.')" color="primary" icon="chart" />
         <x-ui.stat-card label="Unidades" :value="$data['total_units']" color="success" icon="box" />

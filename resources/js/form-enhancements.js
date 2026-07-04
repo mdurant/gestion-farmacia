@@ -21,6 +21,10 @@ function selectPlaceholder(select) {
 }
 
 function shouldEnableSelectSearch(select) {
+    if (select.closest('.filter-toolbar')) {
+        return true;
+    }
+
     return select.options.length > 8;
 }
 

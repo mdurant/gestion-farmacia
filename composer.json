@@ -56,6 +56,7 @@
         ],
         "internet": [
             "Composer\\Config::disableProcessTimeout",
+            "@php -r \"if (file_exists('public/hot')) { unlink('public/hot'); echo 'Removed public/hot (Vite dev).'.PHP_EOL; }\"",
             "npx concurrently -c \"#93c5fd,#c4b5fd,#fdba74,#86efac\" \"php artisan serve --host=0.0.0.0 --port=8000\" \"php artisan queue:listen --tries=1 --timeout=0\" \"php artisan reverb:start --host=0.0.0.0 --port=8080\" --names=server,queue,reverb --kill-others"
         ],
         "test": [

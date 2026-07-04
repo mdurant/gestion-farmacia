@@ -44,6 +44,8 @@
         </form>
     </div>
 
+    <x-ui.records-found :items="$movements" />
+
     <x-ui.card>
         <div class="overflow-x-auto">
             <table class="table table-zebra table-sm">

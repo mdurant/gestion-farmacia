@@ -24,9 +24,14 @@
 
         @can('reports.executive')
             <x-ui.card title="Reportes gerenciales">
-                <p class="mb-4 text-sm text-base-content/70">Valorización, mermas y proyección de compras.</p>
+                <p class="mb-4 text-sm text-base-content/70">Valorización, mermas, proyección de compras y gráficos analíticos.</p>
                 <div class="space-y-3">
-                    @foreach ([\App\Enums\ReportType::Valuation, \App\Enums\ReportType::MonthlyWaste, \App\Enums\ReportType::PurchaseProjection] as $report)
+                    @foreach ([
+                        \App\Enums\ReportType::Charts,
+                        \App\Enums\ReportType::Valuation,
+                        \App\Enums\ReportType::MonthlyWaste,
+                        \App\Enums\ReportType::PurchaseProjection,
+                    ] as $report)
                         <a href="{{ route($report->routeName()) }}" class="flex items-start gap-3 rounded-lg border border-base-300 bg-base-200/40 p-4 transition hover:border-secondary/40 hover:bg-secondary/5">
                             <span class="badge badge-secondary badge-outline badge-sm mt-0.5">Gerencia</span>
                             <span>

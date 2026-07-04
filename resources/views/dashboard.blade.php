@@ -62,17 +62,42 @@
         <x-ui.card title="Alertas del sistema">
             <div class="space-y-3">
                 @forelse ($systemAlerts as $alert)
+                    @php
+                        $alertIcon = match ($alert->type) {
+                            'low_stock' => 'alert',
+                            'expiring_soon' => 'calendar',
+                            'high_value_waste' => 'waste',
+                            default => match ($alert->severity) {
+                                'error' => 'alert',
+                                'warning' => 'expiration',
+                                default => 'info',
+                            },
+                        };
+                        $iconTone = match ($alert->severity) {
+                            'error' => 'bg-error/15 text-error',
+                            'warning' => 'bg-warning/15 text-warning',
+                            default => 'bg-info/15 text-info',
+                        };
+                    @endphp
                     <div @class([
-                        'rounded-lg border px-4 py-3',
+                        'flex items-start gap-3 rounded-lg border px-4 py-3',
                         'border-error/30 bg-error/10' => $alert->severity === 'error',
                         'border-warning/30 bg-warning/10' => $alert->severity === 'warning',
-                        'border-info/30 bg-info/10' => ! in_array($alert->severity, ['error', 'warning']),
+                        'border-info/30 bg-info/10' => ! in_array($alert->severity, ['error', 'warning'], true),
                     ])>
-                        <h3 class="text-sm font-semibold">{{ $alert->title }}</h3>
-                        <p class="mt-1 text-xs text-base-content/70">{{ $alert->message }}</p>
+                        <span @class(['flex size-9 shrink-0 items-center justify-center rounded-lg', $iconTone]) aria-hidden="true">
+                            <x-ui.icon :name="$alertIcon" class="size-5" />
+                        </span>
+                        <div class="min-w-0">
+                            <h3 class="text-sm font-semibold">{{ $alert->title }}</h3>
+                            <p class="mt-1 text-xs text-base-content/70">{{ $alert->message }}</p>
+                        </div>
                     </div>
                 @empty
-                    <div class="rounded-lg border border-success/30 bg-success/10 px-4 py-6 text-center">
+                    <div class="flex flex-col items-center rounded-lg border border-success/30 bg-success/10 px-4 py-6 text-center">
+                        <span class="mb-2 flex size-10 items-center justify-center rounded-lg bg-success/15 text-success" aria-hidden="true">
+                            <x-ui.icon name="check" class="size-5" />
+                        </span>
                         <p class="text-sm font-medium text-success">Sin alertas activas</p>
                         <p class="mt-1 text-xs text-base-content/55">El sistema opera con normalidad</p>
                     </div>

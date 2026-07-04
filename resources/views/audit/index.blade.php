@@ -49,6 +49,8 @@
         </form>
     </div>
 
+    <x-ui.records-found :items="$logs" />
+
     <x-ui.card>
         <div class="overflow-x-auto">
             <table class="table table-zebra">

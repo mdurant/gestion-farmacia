@@ -39,4 +39,11 @@ interface ReportServiceInterface
 
     /** @return list<array<string, mixed>> */
     public function purchaseProjectionRows(ReportFilters $filters): array;
+
+    /**
+     * Datasets para la sección de gráficos analíticos.
+     *
+     * @return array<string, mixed>
+     */
+    public function charts(ReportFilters $filters): array;
 }

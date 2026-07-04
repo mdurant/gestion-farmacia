@@ -120,6 +120,14 @@ class ChartDemoSeeder extends Seeder
         $context['residents'] = Resident::query()->where('is_active', true)->get();
     }
 
+    /** @var list<string> */
+    private array $demoSuppliers = [
+        'Cenabast',
+        'Droguería Hofmann',
+        'Andrómaco Distribución',
+        'Socofar',
+    ];
+
     /** @param array<string, mixed> $context */
     private function seedBatches(array &$context): void
     {
@@ -129,11 +137,14 @@ class ChartDemoSeeder extends Seeder
             return;
         }
 
-        foreach ($this->demoDrugs as $definition) {
+        foreach ($this->demoDrugs as $index => $definition) {
             $drug = $context['drugs']->firstWhere('code', $definition['code']);
             if ($drug === null) {
                 continue;
             }
+
+            $supplier = $this->demoSuppliers[$index % count($this->demoSuppliers)];
+            $nearExpiry = in_array($definition['code'], ['FAR-007', 'FAR-008', 'FAR-010'], true);
 
             Batch::query()->updateOrCreate(
                 [
@@ -142,11 +153,13 @@ class ChartDemoSeeder extends Seeder
                     'batch_number' => 'DEMO-'.$definition['code'],
                 ],
                 [
-                    'expiration_date' => now()->addMonths(random_int(3, 14)),
+                    'expiration_date' => $nearExpiry
+                        ? now()->addDays(random_int(20, 75))
+                        : now()->addMonths(random_int(4, 14)),
                     'quantity' => $definition['stock'],
                     'unit_cost' => $definition['unit_cost'],
-                    'supplier_name' => 'Cenabast',
-                    'received_at' => now()->subMonths(2),
+                    'supplier_name' => $supplier,
+                    'received_at' => now()->subDays(random_int(15, 90)),
                 ],
             );
         }
@@ -166,6 +179,7 @@ class ChartDemoSeeder extends Seeder
                     'expiration_date' => now()->addDays(18),
                     'quantity' => 12,
                     'unit_cost' => 120,
+                    'supplier_name' => 'Cenabast',
                     'received_at' => now()->subWeeks(3),
                 ],
             );
@@ -378,8 +392,9 @@ class ChartDemoSeeder extends Seeder
             MovementType::Transfer => random_int(5, 25),
         };
 
+        $supplier = $batch->supplier_name ?: 'Sin proveedor';
         $reason = match ($type) {
-            MovementType::Entry => 'Entrada demo · Cenabast',
+            MovementType::Entry => 'Entrada demo · '.$supplier,
             MovementType::ExitAdministration => 'Administración a residente',
             MovementType::ExitWaste => 'Salida por merma',
             MovementType::ExitExpiration => 'Salida por vencimiento',

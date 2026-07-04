@@ -94,6 +94,7 @@
     </div>
 
     @livewireScripts
+    @stack('scripts')
 
     @auth
         <x-session-idle-modal />

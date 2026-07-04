@@ -30,11 +30,14 @@
     </div>
 
     <div class="flex flex-wrap items-center justify-between gap-3">
-        <p class="text-sm text-base-content/60">Exportar listado con los filtros aplicados</p>
-        <x-ui.export-buttons
-            :excel-route="route('inventory.drugs.export', ['format' => 'csv'] + request()->query())"
-            :pdf-route="route('inventory.drugs.export', ['format' => 'pdf'] + request()->query())"
-        />
+        <x-ui.records-found :items="$drugs" class="justify-start" />
+        <div class="flex flex-wrap items-center gap-3">
+            <p class="text-sm text-base-content/60">Exportar listado con los filtros aplicados</p>
+            <x-ui.export-buttons
+                :excel-route="route('inventory.drugs.export', ['format' => 'csv'] + request()->query())"
+                :pdf-route="route('inventory.drugs.export', ['format' => 'pdf'] + request()->query())"
+            />
+        </div>
     </div>
 
     <x-ui.card>

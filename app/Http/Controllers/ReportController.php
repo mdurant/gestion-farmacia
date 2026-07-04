@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Contracts\Repositories\CostCenterRepositoryInterface;
 use App\Contracts\Services\ReportServiceInterface;
 use App\Enums\ReportType;
+use App\Enums\MovementType;
 use App\Models\Drug;
 use App\Models\Pharmacy;
 use App\Models\Resident;
+use App\Models\User;
 use App\Support\ReportExporter;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -92,6 +94,23 @@ class ReportController extends Controller
         ]);
     }
 
+    public function charts(Request $request): View
+    {
+        $this->authorize('reports.executive');
+
+        if (! $request->filled('from')) {
+            $request->merge(['from' => now()->subMonths(6)->toDateString()]);
+        }
+
+        $filters = $this->reportService->filtersFromRequest($request);
+
+        return view('reports.charts', [
+            ...$this->filterOptions(),
+            'filters' => $filters,
+            'charts' => $this->reportService->charts($filters),
+        ]);
+    }
+
     public function export(Request $request, string $report, string $format): Response
     {
         $type = ReportType::fromSlug($report);
@@ -103,6 +122,7 @@ class ReportController extends Controller
             $this->authorize('reports.internal');
         }
 
+        abort_if($type === ReportType::Charts, 404);
         abort_unless(in_array($format, ['csv', 'pdf'], true), 404);
 
         [$headers, $rows, $title] = match ($type) {
@@ -156,6 +176,13 @@ class ReportController extends Controller
             'costCenters' => $this->costCenterRepository->activeOptions(),
             'drugs' => Drug::query()->where('is_active', true)->orderBy('name')->get(),
             'residents' => Resident::query()->where('is_active', true)->get()->sortBy('last_name')->values(),
+            'professionals' => User::query()
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->get()
+                ->sortBy(fn (User $user) => mb_strtolower($user->display_name))
+                ->values(),
+            'movementTypes' => MovementType::cases(),
         ];
     }
 }

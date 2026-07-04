@@ -146,6 +146,7 @@ Route::middleware(['auth', 'active', 'session.single', 'session.policy'])->group
             Route::get('/valorizacion', [ReportController::class, 'valuation'])->name('valuation');
             Route::get('/mermas-mensuales', [ReportController::class, 'monthlyWaste'])->name('monthly-waste');
             Route::get('/proyeccion-compra', [ReportController::class, 'purchaseProjection'])->name('purchase-projection');
+            Route::get('/graficos', [ReportController::class, 'charts'])->name('charts');
         });
     });
 

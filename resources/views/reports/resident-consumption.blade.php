@@ -14,6 +14,8 @@
         'showResidentFilter' => true,
     ])
 
+    <x-ui.records-found :items="$rows" />
+
     <div class="space-y-4">
         @forelse ($rows as $row)
             <x-ui.card>
