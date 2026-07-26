@@ -57,8 +57,12 @@ Route::middleware(['auth', 'active', 'session.single', 'session.policy'])->group
             Route::post('/movimientos/entrada', [\App\Http\Controllers\InventoryMovementController::class, 'storeEntry'])->name('movements.entry.store');
             Route::get('/movimientos/traslado', [\App\Http\Controllers\InventoryMovementController::class, 'createTransfer'])->name('movements.transfer.create');
             Route::post('/movimientos/traslado', [\App\Http\Controllers\InventoryMovementController::class, 'storeTransfer'])->name('movements.transfer.store');
-            Route::get('/movimientos/administracion', [\App\Http\Controllers\InventoryMovementController::class, 'createAdministration'])->name('movements.administration.create');
-            Route::post('/movimientos/administracion', [\App\Http\Controllers\InventoryMovementController::class, 'storeAdministration'])->name('movements.administration.store');
+
+            Route::middleware('resident.data.gate')->group(function () {
+                Route::get('/movimientos/administracion', [\App\Http\Controllers\InventoryMovementController::class, 'createAdministration'])->name('movements.administration.create');
+                Route::post('/movimientos/administracion', [\App\Http\Controllers\InventoryMovementController::class, 'storeAdministration'])->name('movements.administration.store');
+            });
+
             Route::get('/movimientos/vencimiento', [\App\Http\Controllers\InventoryMovementController::class, 'createExpiration'])->name('movements.expiration.create');
             Route::post('/movimientos/vencimiento', [\App\Http\Controllers\InventoryMovementController::class, 'storeExpiration'])->name('movements.expiration.store');
         });
@@ -137,7 +141,11 @@ Route::middleware(['auth', 'active', 'session.single', 'session.policy'])->group
     Route::middleware('permission:reports.internal')->prefix('reportes')->name('reports.')->group(function () {
         Route::get('/', [ReportController::class, 'index'])->name('index');
         Route::get('/kardex', [ReportController::class, 'kardex'])->name('kardex');
-        Route::get('/consumo-residentes', [ReportController::class, 'residentConsumption'])->name('resident-consumption');
+
+        Route::middleware('resident.data.gate')->group(function () {
+            Route::get('/consumo-residentes', [ReportController::class, 'residentConsumption'])->name('resident-consumption');
+        });
+
         Route::get('/export/{report}/{format}', [ReportController::class, 'export'])
             ->where('format', 'csv|pdf')
             ->name('export');

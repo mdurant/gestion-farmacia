@@ -112,6 +112,12 @@ class InventoryModuleTest extends TestCase
         ]);
 
         $this->actingAs($user)
+            ->post(route('residents.gate.confirm'), [
+                'password' => 'password',
+                'disclaimer_accepted' => '1',
+            ]);
+
+        $this->actingAs($user)
             ->post(route('inventory.movements.administration.store'), [
                 'batch_id' => $batch->id,
                 'pharmacy_id' => $pharmacy->id,

@@ -10,6 +10,7 @@ use App\DTOs\Inventory\ExpirationMovementData;
 use App\DTOs\Inventory\TransferMovementData;
 use App\DTOs\Inventory\WasteMovementData;
 use App\Exceptions\ControlledDrugAuthorizationRequiredException;
+use App\Exceptions\HighValueWasteAuthorizationRequiredException;
 use App\Http\Requests\Inventory\AdministrationMovementRequest;
 use App\Http\Requests\Inventory\EntryMovementRequest;
 use App\Http\Requests\Inventory\ExpirationMovementRequest;
@@ -36,18 +37,25 @@ class InventoryMovementController extends Controller
 
     public function storeWaste(WasteMovementRequest $request): JsonResponse
     {
-        $movement = $this->movementService->processWasteExit(
-            new WasteMovementData(
-                batchId: $request->integer('batch_id'),
-                pharmacyId: $request->integer('pharmacy_id'),
-                costCenterId: $request->integer('cost_center_id'),
-                userId: (int) $request->user()->id,
-                quantity: $request->integer('quantity'),
-                reason: $request->string('reason')->toString(),
-                notes: $request->input('notes'),
-                authorizationCode: $request->input('authorization_code'),
-            ),
-        );
+        try {
+            $movement = $this->movementService->processWasteExit(
+                new WasteMovementData(
+                    batchId: $request->integer('batch_id'),
+                    pharmacyId: $request->integer('pharmacy_id'),
+                    costCenterId: $request->integer('cost_center_id'),
+                    userId: (int) $request->user()->id,
+                    quantity: $request->integer('quantity'),
+                    reason: $request->string('reason')->toString(),
+                    notes: $request->input('notes'),
+                    authorizationCode: $request->input('authorization_code'),
+                ),
+            );
+        } catch (ControlledDrugAuthorizationRequiredException|HighValueWasteAuthorizationRequiredException|RuntimeException $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+                'errors' => ['authorization_code' => [$e->getMessage()]],
+            ], 422);
+        }
 
         return (new InventoryMovementResource($movement))
             ->response()
@@ -76,7 +84,7 @@ class InventoryMovementController extends Controller
                     authorizationCode: $request->input('authorization_code'),
                 ),
             );
-        } catch (ControlledDrugAuthorizationRequiredException|RuntimeException $e) {
+        } catch (ControlledDrugAuthorizationRequiredException|HighValueWasteAuthorizationRequiredException|RuntimeException $e) {
             return back()->withInput()->withErrors(['authorization_code' => $e->getMessage()]);
         }
 

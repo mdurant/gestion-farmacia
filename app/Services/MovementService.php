@@ -13,6 +13,8 @@ use App\DTOs\Inventory\WasteMovementData;
 use App\Enums\MovementType;
 use App\Events\HighValueWasteRecorded;
 use App\Events\InventoryMovementRecorded;
+use App\Exceptions\HighValueWasteAuthorizationRequiredException;
+use App\Models\AuthorizationCode;
 use App\Models\Batch;
 use App\Models\InventoryMovement;
 use App\Models\SystemAlert;
@@ -26,6 +28,7 @@ class MovementService implements MovementServiceInterface
         private readonly BatchRepositoryInterface $batchRepository,
         private readonly InventoryMovementRepositoryInterface $movementRepository,
         private readonly ControlledDrugAuthorizationService $controlledDrugAuthorizationService,
+        private readonly AuthorizationCodeService $authorizationCodeService,
     ) {}
 
     public function processWasteExit(WasteMovementData $data): InventoryMovement
@@ -204,6 +207,14 @@ class MovementService implements MovementServiceInterface
             $unitCost = (float) $updatedBatch->unit_cost;
             $totalValue = round($unitCost * $quantity, 2);
 
+            if (
+                $triggerHighValueAlert
+                && $movementType === MovementType::ExitWaste
+                && $totalValue >= self::highValueWasteThreshold()
+            ) {
+                $this->assertHighValueWasteAuthorized($user, $totalValue, $authorizationCode);
+            }
+
             $movement = $this->recordMovement([
                 'movement_type' => $movementType->value,
                 'pharmacy_id' => $pharmacyId,
@@ -228,6 +239,29 @@ class MovementService implements MovementServiceInterface
 
             return $movement;
         });
+    }
+
+    private function assertHighValueWasteAuthorized(User $user, float $totalValue, ?string $authorizationCode): void
+    {
+        if ($user->can(\App\Enums\Permission::ControlledDrugAuthorize->value)) {
+            return;
+        }
+
+        $consumed = is_string($authorizationCode) && $authorizationCode !== ''
+            && $this->authorizationCodeService->consume(
+                AuthorizationCode::PURPOSE_HIGH_VALUE_WASTE,
+                $authorizationCode,
+                $user,
+            );
+
+        if ($consumed) {
+            return;
+        }
+
+        throw new HighValueWasteAuthorizationRequiredException(
+            $totalValue,
+            self::highValueWasteThreshold(),
+        );
     }
 
     /** @param array<string, mixed> $data */

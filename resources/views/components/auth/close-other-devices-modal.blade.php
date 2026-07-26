@@ -48,19 +48,29 @@
         @endif
 
         <p class="mt-4 text-sm text-base-content/75">
-            Si continúa aquí, la otra sesión será cerrada automáticamente en todos los dispositivos.
+            Si continúa aquí, la otra sesión será cerrada automáticamente. Confirme su contraseña para completar el ingreso.
         </p>
 
-        <div class="modal-action mt-4 flex-col gap-2 sm:flex-row">
-            <form method="POST" action="{{ route('login.confirm-other-devices') }}" class="w-full sm:w-auto">
+        <div class="modal-action mt-4 flex-col gap-2">
+            <form method="POST" action="{{ route('login.confirm-other-devices') }}" class="w-full space-y-3">
                 @csrf
+                <x-ui.field label="Contraseña" for="confirm_password" :error="$errors->first('password')">
+                    <x-ui.input
+                        id="confirm_password"
+                        type="password"
+                        name="password"
+                        required
+                        autocomplete="current-password"
+                        placeholder="Confirme su contraseña"
+                    />
+                </x-ui.field>
                 <button type="submit" class="btn btn-primary w-full">
                     Cerrar otras sesiones e ingresar
                 </button>
             </form>
             <button
                 type="button"
-                class="btn btn-ghost w-full sm:w-auto"
+                class="btn btn-ghost w-full"
                 onclick="document.getElementById('close-other-devices-dialog').close();"
             >
                 Cancelar

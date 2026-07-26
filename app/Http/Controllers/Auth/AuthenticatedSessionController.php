@@ -49,12 +49,15 @@ class AuthenticatedSessionController extends Controller
             && ! $request->boolean('close_other_devices')
         ) {
             $activeSessionInfo = $this->accessLog->getActiveSessionInfo($user);
-            $this->accessLog->storePendingLogin($request, $user);
 
             Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            $request->session()->regenerate();
+            $this->accessLog->storePendingLogin($request, $user);
 
             return back()
-                ->withInput($request->only('email', 'remember', 'terms_accepted'))
+                ->withInput($request->only('email', 'terms_accepted'))
                 ->with('confirm_close_other_devices', true)
                 ->with('active_session_info', $activeSessionInfo);
         }
@@ -64,6 +67,12 @@ class AuthenticatedSessionController extends Controller
 
     public function confirmCloseOtherDevices(Request $request): RedirectResponse
     {
+        $request->validate([
+            'password' => ['required', 'string'],
+        ], [
+            'password.required' => 'Debe confirmar su contraseña para continuar.',
+        ]);
+
         $pending = $this->accessLog->pullPendingLogin($request);
 
         if ($pending === null) {
@@ -80,12 +89,24 @@ class AuthenticatedSessionController extends Controller
                 ->withErrors(['email' => 'No fue posible completar el ingreso. Intente nuevamente.']);
         }
 
+        if (! Auth::validate(['email' => $user->email, 'password' => $request->input('password')])) {
+            // Restaurar pending si la contraseña falla (TTL restante corto).
+            $this->accessLog->storePendingLoginPayload($request, $pending);
+
+            return back()
+                ->with('confirm_close_other_devices', true)
+                ->with('active_session_info', session('active_session_info'))
+                ->withErrors(['password' => 'La contraseña no es correcta.']);
+        }
+
         $previousToken = $user->current_session_id;
         if (is_string($previousToken) && $previousToken !== '') {
             $this->accessLog->recordDisconnection($user, $previousToken, 'superseded');
         }
 
-        Auth::login($user, $pending['remember']);
+        $remember = (bool) config('acalis.session.allow_remember', false) && ($pending['remember'] ?? false);
+
+        Auth::login($user, $remember);
         $request->session()->regenerate();
 
         $sessionToken = $this->singleSession->claimSession($user, $request);

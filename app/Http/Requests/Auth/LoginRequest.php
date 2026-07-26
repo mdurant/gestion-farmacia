@@ -51,7 +51,7 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        if (! Auth::attempt($this->only('email', 'password'), $this->wantsRemember())) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
@@ -109,5 +109,17 @@ class LoginRequest extends FormRequest
     public function throttleKey(): string
     {
         return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+    }
+
+    /**
+     * Remember Me deshabilitado en entornos clínicos por defecto (política de sesión Acalis).
+     */
+    public function wantsRemember(): bool
+    {
+        if (! (bool) config('acalis.session.allow_remember', false)) {
+            return false;
+        }
+
+        return $this->boolean('remember');
     }
 }

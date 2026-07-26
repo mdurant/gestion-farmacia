@@ -46,3 +46,6 @@ Thumbs.db
 /.phpunit.result.cache/
 /.phpunit.cache/
 ./claude/
+
+#Ciberseguridad
+Cibersecurity.md

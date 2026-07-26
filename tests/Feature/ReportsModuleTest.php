@@ -127,6 +127,12 @@ class ReportsModuleTest extends TestCase
         ]);
 
         $this->actingAs($user)
+            ->post(route('residents.gate.confirm'), [
+                'password' => 'password',
+                'disclaimer_accepted' => '1',
+            ]);
+
+        $this->actingAs($user)
             ->get(route('reports.resident-consumption'))
             ->assertOk()
             ->assertSee($resident->full_name);

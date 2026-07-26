@@ -26,12 +26,14 @@
                             required autocomplete="current-password" />
             </x-ui.field>
 
-            <label class="fieldset-label cursor-pointer justify-start gap-3 rounded-lg border border-base-300 bg-base-200/50 px-3 py-2.5">
-                <input id="remember_me" type="checkbox" name="remember" value="1"
-                       class="checkbox checkbox-primary checkbox-sm"
-                       @checked(old('remember')) />
-                <span>Recordarme en este equipo</span>
-            </label>
+            @if (config('acalis.session.allow_remember'))
+                <label class="fieldset-label cursor-pointer justify-start gap-3 rounded-lg border border-base-300 bg-base-200/50 px-3 py-2.5">
+                    <input id="remember_me" type="checkbox" name="remember" value="1"
+                           class="checkbox checkbox-primary checkbox-sm"
+                           @checked(old('remember')) />
+                    <span>Recordarme en este equipo</span>
+                </label>
+            @endif
 
             <div class="rounded-lg border border-base-300 bg-base-200/40 px-3 py-3">
                 <label class="fieldset-label cursor-pointer items-start justify-start gap-3">
@@ -71,7 +73,7 @@
     <x-auth.terms-modal :terms-version="$termsVersion" />
     <x-auth.close-other-devices-modal :active-session="session('active_session_info')" />
 
-    @if (app()->environment('local'))
+    @if (app()->environment('local') && \App\Support\DemoAccounts::isEnabled())
         <div class="mt-8 rounded-xl border border-base-300 bg-base-200/40 p-4">
             <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-base-content/50">Cuentas demo</p>
             <p class="mb-3 text-xs text-base-content/55">

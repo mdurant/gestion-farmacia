@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Casts\EncryptedDate;
+use App\Casts\EncryptedString;
 use App\Traits\Auditable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
@@ -36,18 +38,18 @@ class Resident extends Model
     protected function casts(): array
     {
         return [
-            'rut' => 'encrypted',
-            'first_name' => 'encrypted',
-            'last_name' => 'encrypted',
-            'room_number' => 'encrypted',
-            'allergies' => 'encrypted',
-            'rescue_service' => 'encrypted',
-            'diagnosis' => 'encrypted',
-            'emergency_contact_name' => 'encrypted',
-            'emergency_contact_phone' => 'encrypted',
-            'medical_notes' => 'encrypted',
-            'birth_date' => 'date',
-            'admission_date' => 'date',
+            'rut' => EncryptedString::class,
+            'first_name' => EncryptedString::class,
+            'last_name' => EncryptedString::class,
+            'room_number' => EncryptedString::class,
+            'allergies' => EncryptedString::class,
+            'rescue_service' => EncryptedString::class,
+            'diagnosis' => EncryptedString::class,
+            'emergency_contact_name' => EncryptedString::class,
+            'emergency_contact_phone' => EncryptedString::class,
+            'medical_notes' => EncryptedString::class,
+            'birth_date' => EncryptedDate::class,
+            'admission_date' => EncryptedDate::class,
             'is_active' => 'boolean',
         ];
     }
@@ -55,7 +57,11 @@ class Resident extends Model
     /** @return Attribute<string, never> */
     protected function fullName(): Attribute
     {
-        return Attribute::get(fn (): string => trim("{$this->first_name} {$this->last_name}"));
+        return Attribute::get(function (): string {
+            $composed = trim("{$this->first_name} {$this->last_name}");
+
+            return $composed !== '' ? $composed : 'Residente #'.$this->id;
+        });
     }
 
     /** @return Attribute<int|null, never> */

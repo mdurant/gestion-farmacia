@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\EncryptedString;
 use App\Enums\TreatmentType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -35,7 +36,7 @@ class ResidentTreatment extends Model
             'treatment_type' => TreatmentType::class,
             'starts_at' => 'date',
             'ends_at' => 'date',
-            'observations' => 'encrypted',
+            'observations' => EncryptedString::class,
             'is_active' => 'boolean',
         ];
     }

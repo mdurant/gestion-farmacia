@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Drug;
 use App\Models\Pharmacy;
 use App\Models\Resident;
+use App\Enums\ResidentAccessAction;
 use App\Services\CatalogExportService;
+use App\Services\ResidentAccessLogService;
 use App\Support\ReportExporter;
 use App\Support\RequestFilters;
 use Illuminate\Http\Request;
@@ -15,6 +17,7 @@ class CatalogExportController extends Controller
 {
     public function __construct(
         private readonly CatalogExportService $catalogExportService,
+        private readonly ResidentAccessLogService $residentAccessLogService,
     ) {}
 
     public function drugs(Request $request, string $format): Response
@@ -54,6 +57,11 @@ class CatalogExportController extends Controller
             'search' => RequestFilters::optionalString($request, 'search'),
             'cost_center_id' => RequestFilters::optionalInteger($request, 'cost_center_id'),
             'is_active' => RequestFilters::optionalBoolean($request, 'is_active'),
+        ]);
+
+        $this->residentAccessLogService->logModuleAccess(ResidentAccessAction::Export, [
+            'format' => $format,
+            'row_count' => count($rows),
         ]);
 
         return $this->respond($format, $title, $headers, $rows);

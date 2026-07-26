@@ -8,6 +8,8 @@ enum ResidentAccessAction: string
     case Create = 'creacion';
     case Update = 'modificacion';
     case Delete = 'baja';
+    case List = 'listado';
+    case Export = 'exportacion';
     case ModuleAccessGranted = 'acceso_modulo_autorizado';
     case ModuleAccessDenied = 'acceso_modulo_denegado';
 
@@ -18,6 +20,8 @@ enum ResidentAccessAction: string
             self::Create => 'Creación',
             self::Update => 'Modificación',
             self::Delete => 'Baja lógica',
+            self::List => 'Listado / búsqueda',
+            self::Export => 'Exportación masiva',
             self::ModuleAccessGranted => 'Acceso al módulo autorizado',
             self::ModuleAccessDenied => 'Intento de acceso denegado',
         };

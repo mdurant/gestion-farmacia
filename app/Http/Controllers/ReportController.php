@@ -49,7 +49,7 @@ class ReportController extends Controller
         $filters = $this->reportService->filtersFromRequest($request);
 
         return view('reports.resident-consumption', [
-            ...$this->filterOptions(),
+            ...$this->filterOptions(includeResidents: true),
             'filters' => $filters,
             'rows' => $this->reportService->residentConsumption($filters),
         ]);
@@ -125,6 +125,16 @@ class ReportController extends Controller
         abort_if($type === ReportType::Charts, 404);
         abort_unless(in_array($format, ['csv', 'pdf'], true), 404);
 
+        if ($type === ReportType::ResidentConsumption) {
+            abort_unless(
+                session()->has('residents.data_access_confirmed_at')
+                && (time() - (int) session('residents.data_access_confirmed_at'))
+                    <= ((int) config('acalis.residents.gate_ttl_minutes', 15) * 60),
+                403,
+                'Debe confirmar el acceso a datos de residentes antes de exportar este reporte.',
+            );
+        }
+
         [$headers, $rows, $title] = match ($type) {
             ReportType::Kardex => [
                 ['Fecha', 'Tipo', 'Fármaco', 'Código', 'Lote', 'Cantidad', 'Bodega', 'Centro costo', 'Profesional', 'Valor CLP'],
@@ -169,13 +179,12 @@ class ReportController extends Controller
     }
 
     /** @return array<string, mixed> */
-    private function filterOptions(): array
+    private function filterOptions(bool $includeResidents = false): array
     {
-        return [
+        $options = [
             'pharmacies' => Pharmacy::query()->orderBy('name')->get(),
             'costCenters' => $this->costCenterRepository->activeOptions(),
             'drugs' => Drug::query()->where('is_active', true)->orderBy('name')->get(),
-            'residents' => Resident::query()->where('is_active', true)->get()->sortBy('last_name')->values(),
             'professionals' => User::query()
                 ->where('is_active', true)
                 ->orderBy('name')
@@ -183,6 +192,17 @@ class ReportController extends Controller
                 ->sortBy(fn (User $user) => mb_strtolower($user->display_name))
                 ->values(),
             'movementTypes' => MovementType::cases(),
+            'residents' => collect(),
         ];
+
+        if ($includeResidents) {
+            $options['residents'] = Resident::query()
+                ->where('is_active', true)
+                ->get()
+                ->sortBy('last_name')
+                ->values();
+        }
+
+        return $options;
     }
 }

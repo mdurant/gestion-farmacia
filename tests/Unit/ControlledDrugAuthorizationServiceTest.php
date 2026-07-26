@@ -8,6 +8,7 @@ use App\Models\Batch;
 use App\Models\Drug;
 use App\Models\Pharmacy;
 use App\Models\User;
+use App\Services\AuthorizationCodeService;
 use App\Services\ControlledDrugAuthorizationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -33,6 +34,17 @@ class ControlledDrugAuthorizationServiceTest extends TestCase
         $service->assertMovementAllowed($batch, $tens);
     }
 
+    public function test_prefix_heuristic_no_longer_bypasses_authorization(): void
+    {
+        $service = app(ControlledDrugAuthorizationService::class);
+        $batch = $this->controlledBatch();
+        $tens = User::factory()->create(['is_active' => true]);
+
+        $this->expectException(ControlledDrugAuthorizationRequiredException::class);
+
+        $service->assertMovementAllowed($batch, $tens, 'FAR-12345678');
+    }
+
     public function test_director_can_move_controlled_drug_without_code(): void
     {
         $service = app(ControlledDrugAuthorizationService::class);
@@ -45,15 +57,22 @@ class ControlledDrugAuthorizationServiceTest extends TestCase
         $this->assertTrue(true);
     }
 
-    public function test_valid_authorization_code_allows_tens(): void
+    public function test_valid_one_time_authorization_code_allows_tens(): void
     {
         $service = app(ControlledDrugAuthorizationService::class);
+        $codes = app(AuthorizationCodeService::class);
         $batch = $this->controlledBatch();
         $tens = User::factory()->create(['is_active' => true]);
 
-        $service->assertMovementAllowed($batch, $tens, 'FAR-12345678');
+        $issuer = User::factory()->create(['is_active' => true]);
+        $issuer->assignRole(UserRole::MedicalDirector->value);
 
-        $this->assertTrue(true);
+        $plain = $codes->issue($issuer, 'controlled_drug', $batch->drug);
+
+        $service->assertMovementAllowed($batch, $tens, $plain);
+
+        $this->expectException(ControlledDrugAuthorizationRequiredException::class);
+        $service->assertMovementAllowed($batch, $tens, $plain);
     }
 
     private function controlledBatch(): Batch

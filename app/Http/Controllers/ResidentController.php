@@ -37,6 +37,10 @@ class ResidentController extends Controller
             'is_active' => RequestFilters::optionalBoolean($request, 'is_active'),
         ];
 
+        $this->residentAccessLogService->logModuleAccess(ResidentAccessAction::List, [
+            'filters' => $filters,
+        ]);
+
         return view('residents.index', [
             'residents' => $this->residentRepository->paginate($filters),
             'costCenters' => $this->costCenterRepository->activeOptions(),

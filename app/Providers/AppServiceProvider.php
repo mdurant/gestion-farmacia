@@ -36,6 +36,12 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        if ($this->app->environment('production') && config('acalis.demo.enabled')) {
+            throw new \RuntimeException(
+                'ACALIS_DEMO_MODE no puede estar activo en producción. Desactive la bandera antes de arrancar.',
+            );
+        }
+
         Gate::policy(Batch::class, BatchPolicy::class);
         Gate::policy(CostCenter::class, CostCenterPolicy::class);
         Gate::policy(Drug::class, DrugPolicy::class);

@@ -40,7 +40,7 @@ class SingleSessionTest extends TestCase
             ->assertSessionHas(AccessLogService::PENDING_LOGIN_KEY);
     }
 
-    public function test_confirm_close_other_devices_logs_in_without_password(): void
+    public function test_confirm_close_other_devices_requires_password(): void
     {
         $user = User::factory()->create(['is_active' => true]);
         $user->assignRole(UserRole::Admin->value);
@@ -55,7 +55,29 @@ class SingleSessionTest extends TestCase
             ->assertSessionHas('confirm_close_other_devices', true);
 
         $this->post(route('login.confirm-other-devices'))
-            ->assertRedirect(route('dashboard'));
+            ->assertSessionHasErrors('password');
+
+        $this->assertGuest();
+        $this->assertSame($firstToken, $user->fresh()->current_session_id);
+    }
+
+    public function test_confirm_close_other_devices_logs_in_with_password(): void
+    {
+        $user = User::factory()->create(['is_active' => true]);
+        $user->assignRole(UserRole::Admin->value);
+
+        $this->post('/login', $this->credentials($user));
+        $firstToken = $user->fresh()->current_session_id;
+
+        $this->flushSession();
+        auth()->logout();
+
+        $this->post('/login', $this->credentials($user))
+            ->assertSessionHas('confirm_close_other_devices', true);
+
+        $this->post(route('login.confirm-other-devices'), [
+            'password' => 'password',
+        ])->assertRedirect(route('dashboard'));
 
         $this->assertNotEquals($firstToken, $user->fresh()->current_session_id);
         $this->assertAuthenticatedAs($user);

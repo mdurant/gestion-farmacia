@@ -24,7 +24,7 @@ class LoginTermsAcceptanceTest extends TestCase
     {
         $this->get('/login')
             ->assertOk()
-            ->assertSee('Recordarme en este equipo', false)
+            ->assertDontSee('Recordarme en este equipo', false)
             ->assertSee('términos y condiciones de uso', false)
             ->assertSee('Tratamiento de datos personales', false)
             ->assertSee('Versión '.config('acalis.terms.version'), false);
@@ -71,8 +71,29 @@ class LoginTermsAcceptanceTest extends TestCase
         $this->assertNotNull($log->user_agent);
     }
 
-    public function test_remember_me_issues_persistent_cookie(): void
+    public function test_remember_me_is_ignored_when_disabled(): void
     {
+        config(['acalis.session.allow_remember' => false]);
+
+        $user = User::factory()->create([
+            'is_active' => true,
+            'remember_token' => null,
+        ]);
+        $user->assignRole(UserRole::Admin->value);
+
+        $response = $this->post('/login', $this->loginPayload($user, [
+            'remember' => '1',
+        ]));
+
+        $response->assertRedirect(route('dashboard'));
+        $this->assertNull($user->fresh()->remember_token);
+        $response->assertCookieMissing(auth()->guard()->getRecallerName());
+    }
+
+    public function test_remember_me_issues_persistent_cookie_when_enabled(): void
+    {
+        config(['acalis.session.allow_remember' => true]);
+
         $user = User::factory()->create(['is_active' => true]);
         $user->assignRole(UserRole::Admin->value);
 

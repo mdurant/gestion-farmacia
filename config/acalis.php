@@ -16,6 +16,7 @@ return [
 
     'residents' => [
         'gate_ttl_minutes' => (int) env('RESIDENTS_GATE_TTL', 15),
+        'soft_delete_retention_days' => (int) env('RESIDENTS_SOFT_DELETE_RETENTION_DAYS', 365),
     ],
 
     'terms' => [
@@ -27,6 +28,12 @@ return [
         'idle_minutes' => (int) env('ACALIS_SESSION_IDLE_MINUTES', 15),
         'warning_countdown_seconds' => (int) env('ACALIS_SESSION_WARNING_SECONDS', 60),
         'single_device' => (bool) env('ACALIS_SESSION_SINGLE_DEVICE', true),
+        'allow_remember' => (bool) env('ACALIS_SESSION_ALLOW_REMEMBER', false),
+        'pending_login_ttl_minutes' => (int) env('ACALIS_PENDING_LOGIN_TTL', 2),
+    ],
+
+    'authorization' => [
+        'code_ttl_minutes' => (int) env('ACALIS_AUTH_CODE_TTL', 15),
     ],
 
     'mail' => [
@@ -35,7 +42,7 @@ return [
     ],
 
     'demo' => [
-        'enabled' => (bool) env('ACALIS_DEMO_MODE', env('APP_ENV') === 'local'),
+        'enabled' => (bool) env('ACALIS_DEMO_MODE', false),
         'notification_email' => env('ACALIS_DEMO_NOTIFICATION_EMAIL', env('ACALIS_EMAIL_NOTIFICATIONS', 'acalisnotificaciones@gmail.com')),
     ],
 

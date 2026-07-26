@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\EncryptedString;
 use App\Enums\UserRole;
 use App\Support\DemoAccounts;
 use App\Traits\Auditable;
@@ -29,9 +30,9 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'first_name' => 'encrypted',
-            'last_name' => 'encrypted',
-            'rut' => 'encrypted',
+            'first_name' => EncryptedString::class,
+            'last_name' => EncryptedString::class,
+            'rut' => EncryptedString::class,
             'role' => UserRole::class,
             'is_active' => 'boolean',
             'activated_at' => 'datetime',
@@ -58,11 +59,13 @@ class User extends Authenticatable
     protected function displayName(): Attribute
     {
         return Attribute::get(function (): string {
-            if ($this->first_name || $this->last_name) {
-                return trim("{$this->first_name} {$this->last_name}");
+            $composed = trim("{$this->first_name} {$this->last_name}");
+
+            if ($composed !== '') {
+                return $composed;
             }
 
-            return (string) $this->name;
+            return (string) ($this->name ?: 'Usuario #'.$this->id);
         });
     }
 

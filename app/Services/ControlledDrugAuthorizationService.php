@@ -5,12 +5,17 @@ namespace App\Services;
 use App\Enums\Permission;
 use App\Events\ControlledDrugAuthorizationRequested;
 use App\Exceptions\ControlledDrugAuthorizationRequiredException;
+use App\Models\AuthorizationCode;
 use App\Models\Batch;
 use App\Models\Drug;
 use App\Models\User;
 
 class ControlledDrugAuthorizationService
 {
+    public function __construct(
+        private readonly AuthorizationCodeService $authorizationCodes,
+    ) {}
+
     public function assertMovementAllowed(Batch $batch, User $user, ?string $authorizationCode = null): void
     {
         $batch->loadMissing('drug');
@@ -24,7 +29,7 @@ class ControlledDrugAuthorizationService
             return;
         }
 
-        if ($this->hasValidAuthorizationCode($drug, $authorizationCode)) {
+        if ($this->consumeAuthorizationCode($drug, $user, $authorizationCode)) {
             return;
         }
 
@@ -38,15 +43,17 @@ class ControlledDrugAuthorizationService
         return $drug->is_controlled || $drug->is_narcotic;
     }
 
-    private function hasValidAuthorizationCode(Drug $drug, ?string $authorizationCode): bool
+    private function consumeAuthorizationCode(Drug $drug, User $user, ?string $authorizationCode): bool
     {
-        if ($authorizationCode === null || $authorizationCode === '') {
+        if ($authorizationCode === null || trim($authorizationCode) === '') {
             return false;
         }
 
-        $expectedPrefix = strtoupper(substr($drug->code, 0, 3));
-
-        return str_starts_with(strtoupper($authorizationCode), $expectedPrefix)
-            && strlen($authorizationCode) >= 8;
+        return $this->authorizationCodes->consume(
+            AuthorizationCode::PURPOSE_CONTROLLED_DRUG,
+            $authorizationCode,
+            $user,
+            $drug,
+        );
     }
 }

@@ -97,11 +97,22 @@ class AccessLogService
 
     public function storePendingLogin(Request $request, User $user): void
     {
-        $request->session()->put(self::PENDING_LOGIN_KEY, [
+        $this->storePendingLoginPayload($request, [
             'user_id' => $user->id,
-            'remember' => $request->boolean('remember'),
+            'remember' => (bool) config('acalis.session.allow_remember', false) && $request->boolean('remember'),
             'terms_version' => (string) config('acalis.terms.version', '1.0.0'),
-            'expires_at' => now()->addMinutes(5)->timestamp,
+            'expires_at' => now()->addMinutes((int) config('acalis.session.pending_login_ttl_minutes', 2))->timestamp,
+        ]);
+    }
+
+    /** @param array{user_id: int, remember?: bool, terms_version: string, expires_at?: int} $payload */
+    public function storePendingLoginPayload(Request $request, array $payload): void
+    {
+        $request->session()->put(self::PENDING_LOGIN_KEY, [
+            'user_id' => (int) $payload['user_id'],
+            'remember' => (bool) ($payload['remember'] ?? false),
+            'terms_version' => (string) ($payload['terms_version'] ?? config('acalis.terms.version', '1.0.0')),
+            'expires_at' => (int) ($payload['expires_at'] ?? now()->addMinutes(2)->timestamp),
         ]);
     }
 

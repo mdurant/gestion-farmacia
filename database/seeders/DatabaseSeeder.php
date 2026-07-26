@@ -19,26 +19,30 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(RolePermissionSeeder::class);
 
-        User::query()
-            ->whereIn('email', DemoAccounts::legacyEmails())
-            ->delete();
+        if (app()->environment('production') || ! config('acalis.demo.enabled')) {
+            $this->command?->warn('Demo seed omitido (producción o ACALIS_DEMO_MODE=false). Solo roles/permisos.');
+        } else {
+            User::query()
+                ->whereIn('email', DemoAccounts::legacyEmails())
+                ->delete();
 
-        foreach (DemoAccounts::seederRecords() as $demo) {
-            $user = User::query()->updateOrCreate(
-                ['email' => $demo['email']],
-                [
-                    'name' => "{$demo['first_name']} {$demo['last_name']}",
-                    'first_name' => $demo['first_name'],
-                    'last_name' => $demo['last_name'],
-                    'rut' => $demo['rut'],
-                    'password' => Hash::make('password'),
-                    'role' => $demo['role'],
-                    'is_active' => true,
-                    'activated_at' => now(),
-                    'email_verified_at' => now(),
-                ],
-            );
-            $user->syncRoles([$demo['role']->value]);
+            foreach (DemoAccounts::seederRecords() as $demo) {
+                $user = User::query()->updateOrCreate(
+                    ['email' => $demo['email']],
+                    [
+                        'name' => "{$demo['first_name']} {$demo['last_name']}",
+                        'first_name' => $demo['first_name'],
+                        'last_name' => $demo['last_name'],
+                        'rut' => $demo['rut'],
+                        'password' => Hash::make('password'),
+                        'role' => $demo['role'],
+                        'is_active' => true,
+                        'activated_at' => now(),
+                        'email_verified_at' => now(),
+                    ],
+                );
+                $user->syncRoles([$demo['role']->value]);
+            }
         }
 
         $costCenterPiso2 = CostCenter::query()->updateOrCreate(

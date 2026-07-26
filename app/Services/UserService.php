@@ -66,12 +66,35 @@ class UserService implements UserServiceInterface
 
             if (isset($data['role'])) {
                 $role = UserRole::from($data['role']);
+                $actor = Auth::user();
+
+                if ($actor !== null && $actor->id === $user->id && $role !== $user->role) {
+                    throw new \InvalidArgumentException('No puede cambiar su propio rol.');
+                }
+
+                if (
+                    $user->role === UserRole::Admin
+                    && $role !== UserRole::Admin
+                    && $this->countActiveAdmins() <= 1
+                ) {
+                    throw new \InvalidArgumentException('Debe existir al menos un administrador activo.');
+                }
+
                 $payload['role'] = $role;
                 $user->syncRoles([$role->value]);
             }
 
             return $this->userRepository->update($user, $payload);
         });
+    }
+
+    private function countActiveAdmins(): int
+    {
+        return User::query()
+            ->where('role', UserRole::Admin->value)
+            ->where('is_active', true)
+            ->whereNull('deleted_at')
+            ->count();
     }
 
     public function deactivate(User $user): User
@@ -96,6 +119,13 @@ class UserService implements UserServiceInterface
 
     public function delete(User $user): void
     {
+        if (
+            $user->role === UserRole::Admin
+            && $this->countActiveAdmins() <= 1
+        ) {
+            throw new \InvalidArgumentException('No puede eliminar al único administrador activo.');
+        }
+
         $user->delete();
         UserStatusChanged::dispatch($user, 'deleted', Auth::user());
     }
